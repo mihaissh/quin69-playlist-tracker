@@ -189,11 +189,11 @@ export default function Home() {
                 </div>
               ) : playlist.currentSongTitle ? (
                 <div>
-                  {/* Album Art and Info Container Layout */}
-                  <div className="flex items-center gap-6 mb-6">
+                  {/* Album Art and Info Layout */}
+                  <div className="flex items-center gap-8 mb-6">
                     {/* Album Artwork */}
                     {albumArt && !showEasterEgg ? (
-                      <div className="w-40 h-40 rounded-xl overflow-hidden shadow-2xl ring-2 ring-emerald-500/30 flex-shrink-0">
+                      <div className="w-52 h-52 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-emerald-500/40 flex-shrink-0">
                         <img
                           src={albumArt}
                           alt="Album Art"
@@ -201,8 +201,8 @@ export default function Home() {
                         />
                       </div>
                     ) : !showEasterEgg && (
-                      <div className="w-40 h-40 rounded-xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 ring-2 ring-zinc-700/30">
-                        <svg className="w-16 h-16 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="w-52 h-52 rounded-2xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 ring-2 ring-zinc-700/30">
+                        <svg className="w-20 h-20 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                         </svg>
                       </div>
@@ -210,26 +210,26 @@ export default function Home() {
                     
                     {/* Easter Egg */}
                     {showEasterEgg && (
-                      <div className="w-40 h-40 flex items-center justify-center flex-shrink-0">
+                      <div className="w-52 h-52 flex items-center justify-center flex-shrink-0">
                         <img
                           src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
                           alt="Easter Egg"
-                          className="w-40 h-40 object-contain animate-fade-in-out"
+                          className="w-52 h-52 object-contain animate-fade-in-out"
                         />
                       </div>
                     )}
                     
-                    {/* Right side: Container with controls */}
-                    <div className="flex-1 flex flex-col justify-center gap-4 min-w-0 bg-zinc-800/30 rounded-xl p-4 border border-zinc-700/30">
+                    {/* Right side: Controls without background */}
+                    <div className="flex-1 flex flex-col justify-center gap-6 min-w-0">
                       {/* Play Button */}
                       {!showEasterEgg && (
                         <div className="flex items-center">
                           <button
                             onClick={handlePlayButtonClick}
-                            className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
+                            className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
                           >
                             <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-                            <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-8 h-8 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M8 5v14l11-7z"/>
                             </svg>
                           </button>
@@ -238,29 +238,29 @@ export default function Home() {
                       
                       {/* Song Name */}
                       <div className="flex-1">
-                        <p className="text-lg font-semibold text-white leading-tight text-left">
+                        <p className="text-2xl font-bold text-white leading-tight text-left">
                           {playlist.currentSongTitle}
                         </p>
                       </div>
                       
                       {/* Search Links */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <a
                           href={`https://open.spotify.com/search/${encodeURIComponent(playlist.currentSongTitle)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-2 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all text-xs text-emerald-400 hover:text-emerald-300"
+                          className="group inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all text-sm text-emerald-400 hover:text-emerald-300"
                         >
-                          <SpotifyIcon className="w-4 h-4" />
+                          <SpotifyIcon className="w-5 h-5" />
                           Spotify
                         </a>
                         <a
                           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(playlist.currentSongTitle)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-2 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all text-xs text-red-400 hover:text-red-300"
+                          className="group inline-flex items-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all text-sm text-red-400 hover:text-red-300"
                         >
-                          <YouTubeIcon className="w-4 h-4" />
+                          <YouTubeIcon className="w-5 h-5" />
                           YouTube
                         </a>
                       </div>
