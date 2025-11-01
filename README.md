@@ -1,16 +1,41 @@
+# Quin69 Playlist Tracker
 
-## Tracking Twitch.tv/Quin69's Chat-Requested Songs
-View this page at: https://orare.github.io/quin-playlist-tracker/
+Track Twitch.tv/Quin69's chat-requested songs in real-time.
 
-This project tracks songs requested in Twitch.tv/Quin69's chat! It builds a playlist of viewer-requested songs using Sheepfarmer's chat logs.
+🔗 **Live:** https://orare.github.io/quin-playlist-tracker/
 
-**How It Works:**
+## Features
 
-We use Sheepfarmer's chat logs to record song requests, keeping the playlist up-to-date. Note that the accuracy depends on whether Quin69 uses the chat's playlist.
+- 🎵 Auto-refreshes every 30 seconds
+- 🔗 Search songs on Spotify & YouTube
+- 📱 Responsive design
+- ⚡ Fast & lightweight
 
-**Keeping It Accurate:**
+## How It Works
 
-If you spot a wrong song, it could be because:
+Fetches Sheepfarmer's chat logs to display currently playing and recently played songs. Accuracy depends on Quin69 using the chat playlist. If a song seems wrong, type `!song` in chat to update.
 
-- Quin69 isn't using the chat's playlist at that moment.
-- The queue is out of date. To fix this, type `!song` in Quin69's chat to update the current song.
+## Tech Stack
+
+Next.js 14 • TypeScript • Tailwind CSS
+
+## Development
+
+**Requirements:** Node.js 18+
+
+```bash
+# Install
+npm install
+
+# Run dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view.
+
+## License
+
+MIT License - Contributions welcome!

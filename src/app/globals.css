@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-zinc-900;
+  }
+  
+  body {
+    @apply text-white min-h-screen;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes pulseRing {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    10% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    15% {
+      transform: scale(1);
+    }
+    85% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+  }
+
+  .animate-pulse-ring {
+    animation: pulseRing 2s ease-in-out infinite;
+  }
+
+  .animate-fade-in-out {
+    animation: fadeInOut 3s ease-in-out forwards;
+  }
+
+  /* Minimal scrollbar styling */
+  .minimal-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(63, 63, 70, 0.3);
+    border-radius: 2px;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(63, 63, 70, 0.5);
+  }
+}
+
