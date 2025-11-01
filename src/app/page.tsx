@@ -173,15 +173,15 @@ export default function Home() {
         <div className="space-y-6">
           {/* Card 1: Now Playing */}
           <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden">
-            <div className="px-5 py-3 border-b border-emerald-500/20 bg-emerald-500/5">
-              <h3 className="text-sm font-medium text-emerald-400 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <div className="px-4 py-2.5 border-b border-emerald-500/20 bg-emerald-500/5">
+              <h3 className="text-xs font-medium text-emerald-400 flex items-center gap-2">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                 </svg>
                 Now Playing
               </h3>
             </div>
-            <div className="p-6">
+            <div className="p-4">
               {loading ? (
                 <div className="flex flex-col items-center gap-3 py-8">
                   <div className="w-10 h-10 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
@@ -190,10 +190,10 @@ export default function Home() {
               ) : playlist.currentSongTitle ? (
                 <div>
                   {/* Album Art and Info Layout */}
-                  <div className="flex items-center gap-8 mb-6">
+                  <div className="flex items-stretch gap-5">
                     {/* Album Artwork */}
                     {albumArt && !showEasterEgg ? (
-                      <div className="w-52 h-52 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-emerald-500/40 flex-shrink-0">
+                      <div className="w-44 rounded-xl overflow-hidden shadow-2xl ring-2 ring-emerald-500/40 flex-shrink-0">
                         <img
                           src={albumArt}
                           alt="Album Art"
@@ -201,8 +201,8 @@ export default function Home() {
                         />
                       </div>
                     ) : !showEasterEgg && (
-                      <div className="w-52 h-52 rounded-2xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 ring-2 ring-zinc-700/30">
-                        <svg className="w-20 h-20 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="w-44 rounded-xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 ring-2 ring-zinc-700/30">
+                        <svg className="w-16 h-16 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                         </svg>
                       </div>
@@ -210,26 +210,26 @@ export default function Home() {
                     
                     {/* Easter Egg */}
                     {showEasterEgg && (
-                      <div className="w-52 h-52 flex items-center justify-center flex-shrink-0">
+                      <div className="w-44 flex items-center justify-center flex-shrink-0">
                         <img
                           src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
                           alt="Easter Egg"
-                          className="w-52 h-52 object-contain animate-fade-in-out"
+                          className="w-44 h-44 object-contain animate-fade-in-out"
                         />
                       </div>
                     )}
                     
                     {/* Right side: Controls without background */}
-                    <div className="flex-1 flex flex-col justify-center gap-6 min-w-0">
+                    <div className="flex-1 flex flex-col justify-center gap-4 min-w-0">
                       {/* Play Button */}
                       {!showEasterEgg && (
                         <div className="flex items-center">
                           <button
                             onClick={handlePlayButtonClick}
-                            className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
+                            className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
                           >
                             <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-                            <svg className="w-8 h-8 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M8 5v14l11-7z"/>
                             </svg>
                           </button>
@@ -237,26 +237,26 @@ export default function Home() {
                       )}
                       
                       {/* Song Name */}
-                      <div className="flex-1 space-y-2">
+                      <div className="flex-1 space-y-1.5">
                         {(() => {
                           // Parse song title - usually format is "Artist - Song Title"
                           const parts = playlist.currentSongTitle.split(' - ');
                           const artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
                           const songTitle = parts.length > 1 ? parts.slice(1).join(' - ').trim() : playlist.currentSongTitle;
                           const titleLength = Math.max(artist.length, songTitle.length);
-                          const textSize = titleLength > 50 ? 'text-base' : titleLength > 30 ? 'text-lg' : 'text-xl';
+                          const textSize = titleLength > 50 ? 'text-sm' : titleLength > 30 ? 'text-base' : 'text-lg';
                           
                           return (
                             <>
                               <div className="text-left">
-                                <span className="text-emerald-400 text-sm font-medium">Artist:</span>
-                                <p className={`${textSize} font-bold text-white leading-tight mt-1`}>
+                                <span className="text-emerald-400 text-xs font-medium">Artist:</span>
+                                <p className={`${textSize} font-bold text-white leading-tight mt-0.5`}>
                                   {artist}
                                 </p>
                               </div>
                               <div className="text-left">
-                                <span className="text-emerald-400 text-sm font-medium">Song:</span>
-                                <p className={`${textSize} font-semibold text-white leading-tight mt-1`}>
+                                <span className="text-emerald-400 text-xs font-medium">Song:</span>
+                                <p className={`${textSize} font-semibold text-white leading-tight mt-0.5`}>
                                   {songTitle}
                                 </p>
                               </div>
@@ -266,23 +266,23 @@ export default function Home() {
                       </div>
                       
                       {/* Search Links */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <a
                           href={`https://open.spotify.com/search/${encodeURIComponent(playlist.currentSongTitle)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all text-sm text-emerald-400 hover:text-emerald-300"
+                          className="group inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all text-xs text-emerald-400 hover:text-emerald-300"
                         >
-                          <SpotifyIcon className="w-5 h-5" />
+                          <SpotifyIcon className="w-4 h-4" />
                           Spotify
                         </a>
                         <a
                           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(playlist.currentSongTitle)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all text-sm text-red-400 hover:text-red-300"
+                          className="group inline-flex items-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all text-xs text-red-400 hover:text-red-300"
                         >
-                          <YouTubeIcon className="w-5 h-5" />
+                          <YouTubeIcon className="w-4 h-4" />
                           YouTube
                         </a>
                       </div>
