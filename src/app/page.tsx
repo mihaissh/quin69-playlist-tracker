@@ -162,7 +162,7 @@ export default function Home() {
                   <div className="mb-4 relative h-20 flex items-center justify-center">
                     {showEasterEgg ? (
                       <img
-                        src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA-2x.webp`}
+                        src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
                         alt="Easter Egg"
                         className="w-24 h-24 object-contain animate-fade-in-out"
                       />
