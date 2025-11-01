@@ -238,7 +238,13 @@ export default function Home() {
                       
                       {/* Song Name */}
                       <div className="flex-1">
-                        <p className="text-2xl font-bold text-white leading-tight text-left">
+                        <p className={`font-bold text-white leading-tight text-left ${
+                          playlist.currentSongTitle.length > 50 
+                            ? 'text-lg' 
+                            : playlist.currentSongTitle.length > 30 
+                            ? 'text-xl' 
+                            : 'text-2xl'
+                        }`}>
                           {playlist.currentSongTitle}
                         </p>
                       </div>
