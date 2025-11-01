@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Quin69 Playlist Tracker",
   description: "Track Twitch.tv/Quin69's chat-requested songs in real-time",
   icons: {
-    icon: '/favicon.svg',
+    icon: `${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/favicon.svg`,
   },
 };
 
