@@ -237,16 +237,32 @@ export default function Home() {
                       )}
                       
                       {/* Song Name */}
-                      <div className="flex-1">
-                        <p className={`font-bold text-white leading-tight text-left ${
-                          playlist.currentSongTitle.length > 50 
-                            ? 'text-lg' 
-                            : playlist.currentSongTitle.length > 30 
-                            ? 'text-xl' 
-                            : 'text-2xl'
-                        }`}>
-                          {playlist.currentSongTitle}
-                        </p>
+                      <div className="flex-1 space-y-2">
+                        {(() => {
+                          // Parse song title - usually format is "Artist - Song Title"
+                          const parts = playlist.currentSongTitle.split(' - ');
+                          const artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
+                          const songTitle = parts.length > 1 ? parts.slice(1).join(' - ').trim() : playlist.currentSongTitle;
+                          const titleLength = Math.max(artist.length, songTitle.length);
+                          const textSize = titleLength > 50 ? 'text-base' : titleLength > 30 ? 'text-lg' : 'text-xl';
+                          
+                          return (
+                            <>
+                              <div className="text-left">
+                                <span className="text-emerald-400 text-sm font-medium">Artist:</span>
+                                <p className={`${textSize} font-bold text-white leading-tight mt-1`}>
+                                  {artist}
+                                </p>
+                              </div>
+                              <div className="text-left">
+                                <span className="text-emerald-400 text-sm font-medium">Song:</span>
+                                <p className={`${textSize} font-semibold text-white leading-tight mt-1`}>
+                                  {songTitle}
+                                </p>
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                       
                       {/* Search Links */}
