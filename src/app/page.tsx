@@ -192,44 +192,60 @@ export default function Home() {
                   <span className="text-zinc-500 text-xs uppercase tracking-wider">Loading</span>
                 </div>
               ) : playlist.currentSongTitle ? (
-                <div className="text-center">
-                  {/* Album Art and Play Button */}
-                  <div className="mb-4 relative h-32 flex items-center justify-center gap-4">
+                <div>
+                  {/* Album Art, Play Button, and Song Name Layout */}
+                  <div className="flex items-center gap-4 mb-6">
                     {/* Album Artwork */}
-                    {albumArt && !showEasterEgg && (
-                      <div className="w-28 h-28 rounded-lg overflow-hidden shadow-lg ring-2 ring-emerald-500/20">
+                    {albumArt && !showEasterEgg ? (
+                      <div className="w-24 h-24 rounded-lg overflow-hidden shadow-lg ring-2 ring-emerald-500/20 flex-shrink-0">
                         <img
                           src={albumArt}
                           alt="Album Art"
                           className="w-full h-full object-cover"
                         />
                       </div>
+                    ) : !showEasterEgg && (
+                      <div className="w-24 h-24 rounded-lg bg-zinc-800/50 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-10 h-10 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                        </svg>
+                      </div>
                     )}
                     
-                    {/* Play Button / Easter Egg */}
-                    <div className="flex items-center justify-center">
-                      {showEasterEgg ? (
+                    {/* Easter Egg */}
+                    {showEasterEgg && (
+                      <div className="w-24 h-24 flex items-center justify-center flex-shrink-0">
                         <img
                           src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
                           alt="Easter Egg"
                           className="w-24 h-24 object-contain animate-fade-in-out"
                         />
-                      ) : (
-                        <button
-                          onClick={handlePlayButtonClick}
-                          className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
-                        >
-                          <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-                          <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
-                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Right side: Play button and Song name */}
+                    <div className="flex-1 flex flex-col gap-3 min-w-0">
+                      {/* Play Button */}
+                      {!showEasterEgg && (
+                        <div className="flex items-center">
+                          <button
+                            onClick={handlePlayButtonClick}
+                            className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
+                          >
+                            <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
+                            <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </button>
+                        </div>
                       )}
+                      
+                      {/* Song Name */}
+                      <p className="text-lg font-medium text-white leading-snug text-left">
+                        {playlist.currentSongTitle}
+                      </p>
                     </div>
                   </div>
-                  <p className="text-lg font-medium text-white mb-4 leading-snug px-2">
-                    {playlist.currentSongTitle}
-                  </p>
                   
                   {/* Search Links */}
                   <div className="flex items-center justify-center gap-3">
