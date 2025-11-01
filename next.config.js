@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/quin-playlist-tracker' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : '',
 }
 
 module.exports = nextConfig

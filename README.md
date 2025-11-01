@@ -2,7 +2,7 @@
 
 Track Twitch.tv/Quin69's chat-requested songs in real-time.
 
-🔗 **Live:** https://orare.github.io/quin-playlist-tracker/
+🔗 **Live:** https://mihaissh.github.io/quin69-playlist-tracker/
 
 ## Features
 
