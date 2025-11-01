@@ -191,22 +191,22 @@ export default function Home() {
                 <div>
                   {/* Album Art and Info Layout */}
                   <div className="flex items-stretch gap-0 relative">
-                    {/* Album Artwork - 30% width with fade effect */}
+                    {/* Album Artwork - 40% width with enhanced fade effect */}
                     {albumArt && !showEasterEgg ? (
-                      <div className="w-[30%] rounded-l-xl overflow-hidden relative flex-shrink-0">
+                      <div className="w-[40%] rounded-l-xl overflow-hidden relative flex-shrink-0">
                         <img
                           src={albumArt}
                           alt="Album Art"
                           className="w-full h-full object-cover"
                         />
-                        {/* Gradient overlay for fade effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-zinc-900"></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 via-transparent to-transparent"></div>
+                        {/* Enhanced gradient overlay for stronger fade effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent from-40% via-zinc-900/60 via-70% to-zinc-900"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/50 via-transparent to-transparent"></div>
                         {/* Glow effect */}
-                        <div className="absolute inset-0 ring-1 ring-inset ring-emerald-500/20"></div>
+                        <div className="absolute inset-0 ring-1 ring-inset ring-emerald-500/30"></div>
                       </div>
                     ) : !showEasterEgg && (
-                      <div className="w-[30%] rounded-l-xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 relative">
+                      <div className="w-[40%] rounded-l-xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 relative">
                         <svg className="w-16 h-16 text-zinc-600 relative z-10" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                         </svg>
@@ -216,7 +216,7 @@ export default function Home() {
                     
                     {/* Easter Egg */}
                     {showEasterEgg && (
-                      <div className="w-[30%] flex items-center justify-center flex-shrink-0 rounded-l-xl bg-zinc-900/50">
+                      <div className="w-[40%] flex items-center justify-center flex-shrink-0 rounded-l-xl bg-zinc-900/50">
                         <img
                           src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
                           alt="Easter Egg"
