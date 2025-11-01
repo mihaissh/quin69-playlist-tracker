@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Quin69 Song Request Queue",
-  description: "Tracking Twitch.tv/Quin69's Chat-Requested Songs",
+  title: "Quin69 Playlist Tracker",
+  description: "Track Twitch.tv/Quin69's chat-requested songs in real-time",
 };
 
 export default function RootLayout({

@@ -116,7 +116,7 @@ export default function Home() {
             >
               <div className="relative">
                 <img
-                  src="/quin69.png"
+                  src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/quin69.png`}
                   alt="Quin69"
                   className="w-12 h-12 rounded-full ring-2 ring-emerald-500/20 group-hover:ring-emerald-500/40 transition-all"
                 />
@@ -162,7 +162,7 @@ export default function Home() {
                   <div className="mb-4 relative h-20 flex items-center justify-center">
                     {showEasterEgg ? (
                       <img
-                        src="/ABOBA-2x.webp"
+                        src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA-2x.webp`}
                         alt="Easter Egg"
                         className="w-24 h-24 object-contain animate-fade-in-out"
                       />
