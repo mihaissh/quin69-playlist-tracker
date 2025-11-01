@@ -24,6 +24,34 @@ export default function Home() {
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
   const [clickCount, setClickCount] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [albumArt, setAlbumArt] = useState<string | null>(null);
+  const [fetchingArt, setFetchingArt] = useState(false);
+
+  const fetchAlbumArt = useCallback(async (songTitle: string) => {
+    if (!songTitle || fetchingArt) return;
+    
+    setFetchingArt(true);
+    try {
+      // Use iTunes Search API to find album artwork
+      const response = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(songTitle)}&entity=song&limit=1`
+      );
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        // Get the highest quality artwork (replace 100x100 with 600x600)
+        const artworkUrl = data.results[0].artworkUrl100?.replace('100x100', '600x600');
+        setAlbumArt(artworkUrl || null);
+      } else {
+        setAlbumArt(null);
+      }
+    } catch (err) {
+      console.error('Error fetching album art:', err);
+      setAlbumArt(null);
+    } finally {
+      setFetchingArt(false);
+    }
+  }, [fetchingArt]);
 
   const updatePlaylist = useCallback(async () => {
     try {
@@ -33,6 +61,12 @@ export default function Home() {
       const text = await response.text();
       const lines = text.split('\n').filter(line => line.trim() !== '');
       const parsedData = parsePlaylist(lines);
+      
+      // Fetch album art if song changed
+      if (parsedData.currentSongTitle && parsedData.currentSongTitle !== playlist.currentSongTitle) {
+        fetchAlbumArt(parsedData.currentSongTitle);
+      }
+      
       setPlaylist(parsedData);
     } catch (err) {
       console.error('Error fetching playlist:', err);
@@ -40,7 +74,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [playlist.currentSongTitle, fetchAlbumArt]);
 
   useEffect(() => {
     updatePlaylist();
@@ -159,24 +193,39 @@ export default function Home() {
                 </div>
               ) : playlist.currentSongTitle ? (
                 <div className="text-center">
-                  <div className="mb-4 relative h-20 flex items-center justify-center">
-                    {showEasterEgg ? (
-                      <img
-                        src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
-                        alt="Easter Egg"
-                        className="w-24 h-24 object-contain animate-fade-in-out"
-                      />
-                    ) : (
-                      <button
-                        onClick={handlePlayButtonClick}
-                        className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
-                      >
-                        <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-                        <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z"/>
-                        </svg>
-                      </button>
+                  {/* Album Art and Play Button */}
+                  <div className="mb-4 relative h-32 flex items-center justify-center gap-4">
+                    {/* Album Artwork */}
+                    {albumArt && !showEasterEgg && (
+                      <div className="w-28 h-28 rounded-lg overflow-hidden shadow-lg ring-2 ring-emerald-500/20">
+                        <img
+                          src={albumArt}
+                          alt="Album Art"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
+                    
+                    {/* Play Button / Easter Egg */}
+                    <div className="flex items-center justify-center">
+                      {showEasterEgg ? (
+                        <img
+                          src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
+                          alt="Easter Egg"
+                          className="w-24 h-24 object-contain animate-fade-in-out"
+                        />
+                      ) : (
+                        <button
+                          onClick={handlePlayButtonClick}
+                          className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
+                        >
+                          <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
+                          <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className="text-lg font-medium text-white mb-4 leading-snug px-2">
                     {playlist.currentSongTitle}
