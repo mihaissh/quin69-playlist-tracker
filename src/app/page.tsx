@@ -173,15 +173,15 @@ export default function Home() {
         <div className="space-y-6">
           {/* Card 1: Now Playing */}
           <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-emerald-500/20 bg-emerald-500/5">
-              <h3 className="text-xs font-medium text-emerald-400 flex items-center gap-2">
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+            <div className="px-3 py-2 border-b border-emerald-500/20 bg-emerald-500/5">
+              <h3 className="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                 </svg>
                 Now Playing
               </h3>
             </div>
-            <div className="p-4">
+            <div className="p-3">
               {loading ? (
                 <div className="flex flex-col items-center gap-3 py-8">
                   <div className="w-10 h-10 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
@@ -224,17 +224,17 @@ export default function Home() {
                       </div>
                     )}
                     
-                    {/* Right side: Controls without background - 70% width */}
-                    <div className="flex-1 flex flex-col justify-center gap-4 min-w-0 pl-6 pr-4 py-4">
+                    {/* Right side: Controls without background - 60% width */}
+                    <div className="flex-1 flex flex-col justify-center gap-2.5 min-w-0 pl-4 pr-3 py-2">
                       {/* Play Button */}
                       {!showEasterEgg && (
                         <div className="flex items-center">
                           <button
                             onClick={handlePlayButtonClick}
-                            className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
+                            className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
                           >
                             <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-                            <svg className="w-6 h-6 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M8 5v14l11-7z"/>
                             </svg>
                           </button>
@@ -242,25 +242,25 @@ export default function Home() {
                       )}
                       
                       {/* Song Name */}
-                      <div className="flex-1 space-y-1.5">
+                      <div className="flex-1 space-y-1">
                         {(() => {
                           // Parse song title - usually format is "Artist - Song Title"
                           const parts = playlist.currentSongTitle.split(' - ');
                           const artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
                           const songTitle = parts.length > 1 ? parts.slice(1).join(' - ').trim() : playlist.currentSongTitle;
                           const titleLength = Math.max(artist.length, songTitle.length);
-                          const textSize = titleLength > 50 ? 'text-sm' : titleLength > 30 ? 'text-base' : 'text-lg';
+                          const textSize = titleLength > 50 ? 'text-xs' : titleLength > 30 ? 'text-sm' : 'text-base';
                           
                           return (
                             <>
                               <div className="text-left">
-                                <span className="text-emerald-400 text-xs font-medium">Artist:</span>
+                                <span className="text-emerald-400 text-[10px] font-medium uppercase tracking-wide">Artist</span>
                                 <p className={`${textSize} font-bold text-white leading-tight mt-0.5`}>
                                   {artist}
                                 </p>
                               </div>
                               <div className="text-left">
-                                <span className="text-emerald-400 text-xs font-medium">Song:</span>
+                                <span className="text-emerald-400 text-[10px] font-medium uppercase tracking-wide">Song</span>
                                 <p className={`${textSize} font-semibold text-white leading-tight mt-0.5`}>
                                   {songTitle}
                                 </p>
@@ -271,23 +271,23 @@ export default function Home() {
                       </div>
                       
                       {/* Search Links */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <a
                           href={`https://open.spotify.com/search/${encodeURIComponent(playlist.currentSongTitle)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all text-xs text-emerald-400 hover:text-emerald-300"
+                          className="group inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-md transition-all text-[10px] text-emerald-400 hover:text-emerald-300"
                         >
-                          <SpotifyIcon className="w-4 h-4" />
+                          <SpotifyIcon className="w-3.5 h-3.5" />
                           Spotify
                         </a>
                         <a
                           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(playlist.currentSongTitle)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all text-xs text-red-400 hover:text-red-300"
+                          className="group inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-all text-[10px] text-red-400 hover:text-red-300"
                         >
-                          <YouTubeIcon className="w-4 h-4" />
+                          <YouTubeIcon className="w-3.5 h-3.5" />
                           YouTube
                         </a>
                       </div>
