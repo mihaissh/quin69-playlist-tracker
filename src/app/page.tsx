@@ -24,6 +24,7 @@ export default function Home() {
     isOffline: false,
   });
   const [loading, setLoading] = useState(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [error, setError] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
@@ -134,16 +135,26 @@ export default function Home() {
       }
       
       setPlaylist(parsedData);
+      
+      // Mark initial load as complete after first successful fetch
+      if (!initialLoadComplete) {
+        setInitialLoadComplete(true);
+      }
+      setLoading(false);
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
         return; // Silently ignore abort errors
       }
       console.error('Error fetching playlist:', err);
       setError(true);
-    } finally {
+      
+      // Still mark as complete even on error to prevent infinite loading
+      if (!initialLoadComplete) {
+        setInitialLoadComplete(true);
+      }
       setLoading(false);
     }
-  }, [playlist.currentSongTitle, fetchAlbumArt, checkStreamStatus]);
+  }, [playlist.currentSongTitle, fetchAlbumArt, checkStreamStatus, initialLoadComplete]);
 
   useEffect(() => {
     updatePlaylist();
@@ -322,7 +333,7 @@ export default function Home() {
         <div className="space-y-6 flex-grow">
           {/* Card 1: Now Playing */}
           <NowPlaying
-            isLoading={loading}
+            isLoading={loading && !initialLoadComplete}
             isOffline={playlist.isOffline}
             currentSong={playlist.currentSongTitle}
             albumArt={albumArt}
