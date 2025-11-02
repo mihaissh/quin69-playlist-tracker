@@ -31,8 +31,8 @@ export const EASTER_EGG_COOLDOWN_MS = 5 * 60 * 1000;
  * UI Size constants
  */
 export const UI_SIZES = {
-  ARTWORK_SIZE: "w-40 sm:w-[30%]",
-  LABEL_SIZE: "text-[11px] sm:text-[10px]"
+  ARTWORK_SIZE: "w-22 h-22",
+  LABEL_SIZE: "text-[11px]"
 } as const;
 
 /**
