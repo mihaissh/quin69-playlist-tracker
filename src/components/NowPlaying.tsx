@@ -11,11 +11,9 @@ import type {
   SearchLinksProps,
 } from '@/types/music';
 import type { IconProps } from '@/types/common';
-import { OFFLINE_MESSAGES, EMPTY_STATE_MESSAGES, UI_SIZES, ASSETS } from '@/constants';
+import { OFFLINE_MESSAGES, EMPTY_STATE_MESSAGES, ASSETS } from '@/constants';
 
 // ==================== Constants ====================
-
-const { ARTWORK_SIZE, LABEL_SIZE } = UI_SIZES;
 
 // ==================== Utility Functions ====================
 
@@ -108,10 +106,10 @@ const InfoField = ({
   textSize = "text-base"
 }: InfoFieldProps) => (
   <div>
-    <span className={`${labelColor} ${LABEL_SIZE} font-medium uppercase tracking-wide`}>
+    <span className={`${labelColor} text-[10px] font-medium uppercase tracking-wide block mb-1`}>
       {label}
     </span>
-    <p className={`${textSize} font-bold text-white leading-tight mt-1 sm:mt-0.5`}>
+    <p className={`${textSize} font-bold text-white leading-tight`}>
       {value}
     </p>
   </div>
@@ -123,7 +121,7 @@ const AlbumArtwork = ({
 }: AlbumArtworkProps) => {
   if (src) {
     return (
-      <div className={`${ARTWORK_SIZE} aspect-square rounded-lg overflow-hidden flex-shrink-0 shadow-lg`}>
+      <div className="w-52 h-52 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
         <img 
           src={src} 
           alt={alt} 
@@ -137,14 +135,14 @@ const AlbumArtwork = ({
   }
 
   return (
-    <div className={`${ARTWORK_SIZE} aspect-square rounded-lg bg-zinc-800/50 flex items-center justify-center flex-shrink-0`}>
-      <MusicIcon className="w-16 h-16 sm:w-12 sm:h-12 text-zinc-600" />
+    <div className="w-52 h-52 rounded-lg bg-zinc-800/50 flex items-center justify-center flex-shrink-0">
+      <MusicIcon className="w-24 h-24 text-zinc-600" />
     </div>
   );
 };
 
 const EasterEggDisplay = () => (
-  <div className={`${ARTWORK_SIZE} aspect-square rounded-lg flex items-center justify-center flex-shrink-0 bg-zinc-900/50`}>
+  <div className="w-52 h-52 rounded-lg flex items-center justify-center flex-shrink-0 bg-zinc-900/50">
     <img
       src={getAssetPath(ASSETS.EASTER_EGG_GIF)}
       alt="Easter Egg"
@@ -194,23 +192,23 @@ const PlayButton = ({
 );
 
 const SearchLinks = ({ songQuery }: SearchLinksProps) => (
-  <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 order-3">
+  <div className="flex items-center justify-center sm:justify-start gap-2">
     <a
       href={`https://open.spotify.com/search/${encodeURIComponent(songQuery)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center justify-center gap-1.5 sm:gap-1 flex-1 sm:flex-initial px-3 py-2 sm:px-2.5 sm:py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-md transition-all text-xs sm:text-[10px] font-medium text-emerald-400 hover:text-emerald-300"
+      className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-md transition-all text-xs font-medium text-emerald-400 hover:text-emerald-300"
     >
-      <SpotifyIcon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+      <SpotifyIcon className="w-4 h-4" />
       Spotify
     </a>
     <a
       href={`https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center justify-center gap-1.5 sm:gap-1 flex-1 sm:flex-initial px-3 py-2 sm:px-2.5 sm:py-1.5 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-all text-xs sm:text-[10px] font-medium text-red-400 hover:text-red-300"
+      className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-all text-xs font-medium text-red-400 hover:text-red-300"
     >
-      <YouTubeIcon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+      <YouTubeIcon className="w-4 h-4" />
       YouTube
     </a>
   </div>
@@ -220,29 +218,31 @@ const OfflineState = () => {
   const message = getRotatingMessage(OFFLINE_MESSAGES);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4 sm:gap-3">
-      <div className={`${ARTWORK_SIZE} aspect-square rounded-lg overflow-hidden flex-shrink-0 shadow-lg`}>
-        <img
-          src={getAssetPath(ASSETS.BEDGE_EMOTE)}
-          alt="Bedge"
-          className="w-full h-full object-cover"
-          loading="eager"
-          decoding="async"
-        />
+    <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex-shrink-0 mx-auto sm:mx-0">
+        <div className="w-52 h-52 rounded-lg overflow-hidden shadow-lg">
+          <img
+            src={getAssetPath(ASSETS.BEDGE_EMOTE)}
+            alt="Bedge"
+            className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
       </div>
       
-      <div className="flex-1 flex flex-col justify-center gap-2.5 min-w-0 w-full sm:w-auto">
-        <div className="space-y-2 sm:space-y-1 text-center sm:text-left">
+      <div className="flex-1 flex flex-col justify-center min-w-0">
+        <div className="space-y-2 text-center sm:text-left">
           <InfoField 
             label="Status" 
             value={message.title} 
             labelColor="text-red-400"
           />
           <div>
-            <span className={`text-red-400 ${LABEL_SIZE} font-medium uppercase tracking-wide`}>
+            <span className="text-red-400 text-[10px] font-medium uppercase tracking-wide block mb-1">
               Activity
             </span>
-            <p className="text-base font-semibold text-zinc-500 leading-tight mt-1 sm:mt-0.5">
+            <p className="text-base font-semibold text-zinc-500 leading-tight">
               {message.subtitle}
             </p>
           </div>
@@ -263,18 +263,20 @@ const PlayingState = ({
   const textSizeClass = getTextSizeClass(songInfo.artist, songInfo.title);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4 sm:gap-3">
-      {/* Album Artwork or Easter Egg */}
-      {showEasterEgg ? (
-        <EasterEggDisplay />
-      ) : (
-        <AlbumArtwork src={albumArt} />
-      )}
+    <div className="flex flex-col sm:flex-row gap-4">
+      {/* Album Artwork or Easter Egg - Matches info container height */}
+      <div className="flex-shrink-0 mx-auto sm:mx-0 h-auto sm:h-auto">
+        {showEasterEgg ? (
+          <EasterEggDisplay />
+        ) : (
+          <AlbumArtwork src={albumArt} />
+        )}
+      </div>
       
-      {/* Song Info and Controls */}
-      <div className="flex-1 flex flex-col justify-between gap-3 sm:gap-2.5 min-w-0 w-full sm:w-auto">
-        {/* Play Button - Hidden on mobile, first on desktop */}
-        <div className="order-2 sm:order-1">
+      {/* Right Side: Song Info and Controls */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Play Button - Hidden on mobile */}
+        <div className="hidden sm:block mb-2">
           <PlayButton 
             onClick={onPlayButtonClick}
             disabled={showEasterEgg}
@@ -282,25 +284,24 @@ const PlayingState = ({
           />
         </div>
         
-        {/* Song Info - First on mobile, middle on desktop */}
-        <div className="flex-1 space-y-2 sm:space-y-1 text-center sm:text-left order-1 sm:order-2">
+        {/* Song Info */}
+        <div className="space-y-3 text-center sm:text-left mb-4">
           <InfoField 
             label="Artist" 
             value={songInfo.artist}
             textSize={textSizeClass}
           />
-          <div>
-            <span className={`text-emerald-400 ${LABEL_SIZE} font-medium uppercase tracking-wide`}>
-              Song
-            </span>
-            <p className={`${textSizeClass} font-semibold text-white leading-tight mt-1 sm:mt-0.5`}>
-              {songInfo.title}
-            </p>
-          </div>
+          <InfoField 
+            label="Song" 
+            value={songInfo.title}
+            textSize={textSizeClass}
+          />
         </div>
         
-        {/* Search Links - Last on both */}
-        <SearchLinks songQuery={currentSong} />
+        {/* Search Links - At bottom */}
+        <div className="mt-auto">
+          <SearchLinks songQuery={currentSong} />
+        </div>
       </div>
     </div>
   );
