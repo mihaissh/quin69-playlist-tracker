@@ -58,13 +58,13 @@ export default function Home() {
       return isLive;
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        return isStreamLive; // Return current state if aborted
+        return false; // Return false if aborted since we couldn't verify
       }
       console.error('Error checking stream status:', err);
       setIsStreamLive(false);
       return false;
     }
-  }, [isStreamLive]);
+  }, []);
 
   const fetchAlbumArt = useCallback(async (songTitle: string) => {
     if (!songTitle) return;
