@@ -1,7 +1,6 @@
 /**
- * Optimized Bouncing Ball Spinner Component
- * Based on SVG Spinners by Utkarsh Verma
- * https://github.com/n3r4zzurr0/svg-spinners
+ * Optimized CSS-based Spinner Component
+ * Uses CSS animations for better performance and reliability on slow networks
  */
 
 import type { SpinnerProps, LoadingSpinnerProps } from '@/types/spinner';
@@ -12,77 +11,35 @@ export function Spinner({
   color = "currentColor" 
 }: SpinnerProps) {
   return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24"
-      className={className}
+    <div 
+      className={`${className} relative inline-block`}
+      style={{ width: size, height: size }}
       aria-label="Loading"
       role="status"
     >
-      <ellipse 
-        cx="12" 
-        cy="5" 
-        fill={color} 
-        rx="4" 
-        ry="4"
+      {/* Rotating circle spinner - reliable on all connections */}
+      <svg 
+        className="animate-spin"
+        width={size} 
+        height={size} 
+        viewBox="0 0 24 24"
+        fill="none"
       >
-        {/* Main bounce animation */}
-        <animate 
-          id="bounce-down" 
-          fill="freeze" 
-          attributeName="cy" 
-          begin="0;bounce-up.end" 
-          calcMode="spline" 
-          dur="0.375s" 
-          keySplines=".33,0,.66,.33" 
-          values="5;20"
+        <circle 
+          className="opacity-25" 
+          cx="12" 
+          cy="12" 
+          r="10" 
+          stroke={color}
+          strokeWidth="3"
         />
-        
-        {/* Squash on impact - horizontal */}
-        <animate 
-          attributeName="rx" 
-          begin="bounce-down.end" 
-          calcMode="spline" 
-          dur="0.05s" 
-          keySplines=".33,0,.66,.33;.33,.66,.66,1" 
-          values="4;4.8;4"
+        <path 
+          className="opacity-75" 
+          fill={color}
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         />
-        
-        {/* Squash on impact - vertical */}
-        <animate 
-          attributeName="ry" 
-          begin="bounce-down.end" 
-          calcMode="spline" 
-          dur="0.05s" 
-          keySplines=".33,0,.66,.33;.33,.66,.66,1" 
-          values="4;3;4"
-        />
-        
-        {/* Slight settle */}
-        <animate 
-          id="settle" 
-          attributeName="cy" 
-          begin="bounce-down.end" 
-          calcMode="spline" 
-          dur="0.025s" 
-          keySplines=".33,0,.66,.33" 
-          values="20;20.5"
-        />
-        
-        {/* Bounce up */}
-        <animate 
-          id="bounce-up" 
-          attributeName="cy" 
-          begin="settle.end" 
-          calcMode="spline" 
-          dur="0.4s" 
-          keySplines=".33,.66,.66,1" 
-          values="20.5;5"
-        />
-      </ellipse>
-    </svg>
+      </svg>
+    </div>
   );
 }
 

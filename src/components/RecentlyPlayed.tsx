@@ -24,9 +24,9 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
       if (diffMins < 60) return `${diffMins}m ago`;
       if (diffHours < 24) return `${diffHours}h ago`;
       
-      // Return formatted time for older songs
-      const hours = date.getHours().toString().padStart(2, '0');
-      const mins = date.getMinutes().toString().padStart(2, '0');
+      // Return formatted time for older songs (using UTC to match timestamp parsing)
+      const hours = date.getUTCHours().toString().padStart(2, '0');
+      const mins = date.getUTCMinutes().toString().padStart(2, '0');
       return `${hours}:${mins}`;
     } catch {
       return '';

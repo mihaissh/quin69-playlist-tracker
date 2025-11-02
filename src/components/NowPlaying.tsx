@@ -124,7 +124,14 @@ const AlbumArtwork = ({
   if (src) {
     return (
       <div className={`${ARTWORK_SIZE} aspect-square rounded-lg overflow-hidden flex-shrink-0 shadow-lg`}>
-        <img src={src} alt={alt} className="w-full h-full object-cover" />
+        <img 
+          src={src} 
+          alt={alt} 
+          className="w-full h-full object-cover" 
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+        />
       </div>
     );
   }
@@ -142,6 +149,8 @@ const EasterEggDisplay = () => (
       src={getAssetPath(ASSETS.EASTER_EGG_GIF)}
       alt="Easter Egg"
       className="w-full h-full object-contain animate-fade-in-out"
+      loading="lazy"
+      decoding="async"
     />
   </div>
 );
@@ -217,6 +226,8 @@ const OfflineState = () => {
           src={getAssetPath(ASSETS.BEDGE_EMOTE)}
           alt="Bedge"
           className="w-full h-full object-cover"
+          loading="eager"
+          decoding="async"
         />
       </div>
       

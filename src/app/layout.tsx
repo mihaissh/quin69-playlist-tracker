@@ -16,6 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Preconnect to external resources for faster loading */}
+        <link rel="preconnect" href="https://decapi.me" />
+        <link rel="preconnect" href="https://logs.ivr.fi" />
+        <link rel="dns-prefetch" href="https://open.spotify.com" />
+        <link rel="dns-prefetch" href="https://www.youtube.com" />
+      </head>
       <body className="antialiased">
         {children}
       </body>
