@@ -1,7 +1,5 @@
-interface HeaderProps {
-  isOffline: boolean;
-  hasError: boolean;
-}
+import type { HeaderProps } from '@/types/header';
+import { ASSETS } from '@/constants';
 
 export function Header({ isOffline, hasError }: HeaderProps) {
   const isOfflineOrError = isOffline || hasError;
@@ -18,9 +16,12 @@ export function Header({ isOffline, hasError }: HeaderProps) {
         >
           <div className="relative">
             <img
-              src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/quin69.png`}
+              src={`${ASSETS.BASE_PATH}/${ASSETS.PROFILE_IMAGE}`}
               alt="Quin69"
               className="w-12 h-12 rounded-full ring-2 ring-emerald-500/20 group-hover:ring-emerald-500/40 transition-all"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
             <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-zinc-900 ${isOfflineOrError ? 'bg-zinc-500' : 'bg-emerald-500'}`} />
           </div>
