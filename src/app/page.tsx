@@ -372,7 +372,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="text-purple-400 hover:text-purple-300 transition-colors"
             >
-              Quin69's
+              Quin69&apos;s
             </a>{' '}
             community • by{' '}
             <a 
