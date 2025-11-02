@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon } from '@/components/icons';
+import { Header } from '@/components/Header';
+import { NowPlaying } from '@/components/NowPlaying';
+import { RecentlyPlayed } from '@/components/RecentlyPlayed';
 
 interface PlaylistData {
   currentSongTitle: string | null;
   historyTitles: string[];
+  isOffline: boolean;
 }
 
 // Constants
@@ -18,13 +21,34 @@ export default function Home() {
   const [playlist, setPlaylist] = useState<PlaylistData>({
     currentSongTitle: null,
     historyTitles: [],
+    isOffline: false,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [selectedSong, setSelectedSong] = useState<string | null>(null);
   const [clickCount, setClickCount] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [albumArt, setAlbumArt] = useState<string | null>(null);
+  const [isStreamLive, setIsStreamLive] = useState(false);
+
+  const checkStreamStatus = useCallback(async () => {
+    try {
+      // Use decapi.me to check if stream is live
+      const response = await fetch('https://decapi.me/twitch/uptime/quin69');
+      const text = await response.text();
+      
+      // If the response contains "offline" or error message, stream is not live
+      const isLive = !text.toLowerCase().includes('offline') && 
+                     !text.toLowerCase().includes('error') &&
+                     text.trim() !== '';
+      
+      setIsStreamLive(isLive);
+      return isLive;
+    } catch (err) {
+      console.error('Error checking stream status:', err);
+      setIsStreamLive(false);
+      return false;
+    }
+  }, []);
 
   const fetchAlbumArt = useCallback(async (songTitle: string) => {
     if (!songTitle) return;
@@ -52,11 +76,15 @@ export default function Home() {
   const updatePlaylist = useCallback(async () => {
     try {
       setError(false);
+      
+      // Check if stream is live on Twitch
+      const streamIsLive = await checkStreamStatus();
+      
       // Fetch WITH reverse to get newest messages first
       const response = await fetch('https://logs.ivr.fi/channel/quin69/user/sheepfarmer/?reverse');
       const text = await response.text();
       const lines = text.split('\n').filter(line => line.trim() !== '');
-      const parsedData = parsePlaylist(lines);
+      const parsedData = parsePlaylist(lines, streamIsLive);
       
       // Fetch album art if song changed
       if (parsedData.currentSongTitle && parsedData.currentSongTitle !== playlist.currentSongTitle) {
@@ -70,7 +98,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [playlist.currentSongTitle, fetchAlbumArt]);
+  }, [playlist.currentSongTitle, fetchAlbumArt, checkStreamStatus]);
 
   useEffect(() => {
     updatePlaylist();
@@ -92,18 +120,27 @@ export default function Home() {
     }
   };
 
-  function parsePlaylist(lines: string[]): PlaylistData {
+  function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistData {
     let currentSongTitle: string | null = null;
     let historyTitles: string[] = [];
+    
+    // Use actual Twitch stream status
+    const isOffline = !streamIsLive;
 
     // Get all songs with 🔊 (speaker emoji)
     // With ?reverse, newest messages are first
     const allSongs = lines
-      .filter(line => line.includes('🔊') && !line.includes('VIBE'))
+      .filter(line => 
+        line.includes('🔊') && 
+        !line.includes('VIBE') && 
+        !line.toLowerCase().includes('offline') &&
+        !line.includes('Clearing the spotify')
+      )
       .map(line => line.substring(line.indexOf('🔊') + 2).trim());
 
     if (allSongs.length === 0) {
-      return { currentSongTitle: null, historyTitles: [] };
+      // No valid songs found
+      return { currentSongTitle: null, historyTitles: [], isOffline };
     }
 
     // The FIRST song (most recent message) is the current song
@@ -125,271 +162,29 @@ export default function Home() {
     // Limit history to most recent unique songs
     historyTitles = historyTitles.slice(0, MAX_HISTORY_SONGS);
 
-    return { currentSongTitle, historyTitles };
+    return { currentSongTitle, historyTitles, isOffline };
   }
-
-  const hasHistory = playlist.historyTitles.length > 0;
 
   return (
     <div className="min-h-screen bg-zinc-900 text-white">
       {/* Main Container */}
       <div className="w-full max-w-3xl mx-auto px-6 py-8">
-        {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center justify-between">
-            {/* Profile */}
-            <a 
-              href="https://www.twitch.tv/quin69"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 group"
-            >
-              <div className="relative">
-                <img
-                  src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/quin69.png`}
-                  alt="Quin69"
-                  className="w-12 h-12 rounded-full ring-2 ring-emerald-500/20 group-hover:ring-emerald-500/40 transition-all"
-                />
-                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-zinc-900 ${error ? 'bg-red-500' : 'bg-emerald-500'}`} />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold group-hover:text-emerald-400 transition-colors">
-                  Quin69
-                </h1>
-                <p className="text-xs text-zinc-500">
-                  Song Requests
-                </p>
-              </div>
-            </a>
-
-            {/* Status Badge */}
-            <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${error ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
-              {error ? 'Offline' : 'Live'}
-            </div>
-          </div>
-        </header>
+        <Header isOffline={playlist.isOffline} hasError={error} />
 
         {/* Vertical 2-Card Layout */}
         <div className="space-y-6">
           {/* Card 1: Now Playing */}
-          <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden">
-            <div className="px-3 py-2 border-b border-emerald-500/20 bg-emerald-500/5">
-              <h3 className="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                </svg>
-                Now Playing
-              </h3>
-            </div>
-            <div className="p-3">
-              {loading ? (
-                <div className="flex flex-col items-center gap-3 py-8">
-                  <div className="w-10 h-10 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-                  <span className="text-zinc-500 text-xs uppercase tracking-wider">Loading</span>
-                </div>
-              ) : playlist.currentSongTitle ? (
-                <div>
-                  {/* Album Art and Info Layout - Responsive */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-3 relative">
-                    {/* Album Artwork - Responsive width with rounded corners */}
-                    {albumArt && !showEasterEgg ? (
-                      <div className="w-32 sm:w-[30%] aspect-square rounded-lg overflow-hidden flex-shrink-0">
-                        <img
-                          src={albumArt}
-                          alt="Album Art"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : !showEasterEgg && (
-                      <div className="w-32 sm:w-[30%] aspect-square rounded-lg bg-zinc-800/50 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-12 h-12 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                        </svg>
-                      </div>
-                    )}
-                    
-                    {/* Easter Egg */}
-                    {showEasterEgg && (
-                      <div className="w-32 sm:w-[30%] aspect-square rounded-lg flex items-center justify-center flex-shrink-0 bg-zinc-900/50">
-                        <img
-                          src={`${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/ABOBA.gif`}
-                          alt="Easter Egg"
-                          className="w-full h-full object-contain animate-fade-in-out"
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Right side: Controls - Responsive layout */}
-                    <div className="flex-1 flex flex-col justify-center gap-2.5 sm:gap-2.5 min-w-0 w-full sm:w-auto">
-                      {/* Play Button */}
-                      {!showEasterEgg && (
-                        <div className="flex items-center justify-center sm:justify-start">
-                          <button
-                            onClick={handlePlayButtonClick}
-                            className="w-10 h-10 sm:w-10 sm:h-10 rounded-full bg-emerald-500/10 flex items-center justify-center relative animate-pulse-ring cursor-pointer hover:scale-105 transition-transform"
-                          >
-                            <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-                            <svg className="w-5 h-5 text-emerald-500 relative z-10 animate-pulse-slow" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z"/>
-                            </svg>
-                          </button>
-                        </div>
-                      )}
-                      
-                      {/* Song Name */}
-                      <div className="flex-1 space-y-1 text-center sm:text-left w-full">
-                        {(() => {
-                          // Parse song title - usually format is "Artist - Song Title"
-                          const parts = playlist.currentSongTitle.split(' - ');
-                          const artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-                          const songTitle = parts.length > 1 ? parts.slice(1).join(' - ').trim() : playlist.currentSongTitle;
-                          const titleLength = Math.max(artist.length, songTitle.length);
-                          const textSize = titleLength > 50 ? 'text-xs sm:text-xs' : titleLength > 30 ? 'text-sm sm:text-sm' : 'text-sm sm:text-base';
-                          
-                          return (
-                            <>
-                              <div>
-                                <span className="text-emerald-400 text-[10px] font-medium uppercase tracking-wide">Artist</span>
-                                <p className={`${textSize} font-bold text-white leading-tight mt-0.5`}>
-                                  {artist}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="text-emerald-400 text-[10px] font-medium uppercase tracking-wide">Song</span>
-                                <p className={`${textSize} font-semibold text-white leading-tight mt-0.5`}>
-                                  {songTitle}
-                                </p>
-                              </div>
-                            </>
-                          );
-                        })()}
-                      </div>
-                      
-                      {/* Search Links */}
-                      <div className="flex items-center justify-center sm:justify-start gap-1.5 w-full sm:w-auto">
-                        <a
-                          href={`https://open.spotify.com/search/${encodeURIComponent(playlist.currentSongTitle)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-2.5 sm:py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-md transition-all text-[10px] text-emerald-400 hover:text-emerald-300"
-                        >
-                          <SpotifyIcon className="w-3.5 h-3.5" />
-                          Spotify
-                        </a>
-                        <a
-                          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(playlist.currentSongTitle)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-2.5 sm:py-1.5 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-all text-[10px] text-red-400 hover:text-red-300"
-                        >
-                          <YouTubeIcon className="w-3.5 h-3.5" />
-                          YouTube
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-zinc-800/50 flex items-center justify-center mb-3">
-                    <svg className="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                    </svg>
-                  </div>
-                  <p className="text-zinc-600 text-sm">No song playing</p>
-                </div>
-              )}
-            </div>
-          </div>
+          <NowPlaying
+            isLoading={loading}
+            isOffline={playlist.isOffline}
+            currentSong={playlist.currentSongTitle}
+            albumArt={albumArt}
+            showEasterEgg={showEasterEgg}
+            onPlayButtonClick={handlePlayButtonClick}
+          />
 
           {/* Card 2: Recently Played */}
-          <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden">
-            <div className="px-5 py-3 border-b border-zinc-700/50 bg-zinc-800/30">
-              <h3 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
-                <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Recently Played
-              </h3>
-            </div>
-            <div className="divide-y divide-zinc-700/20 max-h-[350px] overflow-y-auto minimal-scrollbar">
-              {hasHistory ? (
-                playlist.historyTitles.map((song, index) => {
-                  const isSkipped = song.toLowerCase().includes('skipped');
-                  
-                  return (
-                    <div key={index}>
-                      {isSkipped ? (
-                        // Skipped songs - no dropdown
-                        <div className="w-full text-left px-5 py-3.5">
-                          <span className="text-sm text-zinc-500 italic flex-1 truncate">
-                            {song}
-                          </span>
-                        </div>
-                      ) : (
-                        // Normal songs with dropdown
-                        <>
-                          <button
-                            onClick={() => setSelectedSong(selectedSong === song ? null : song)}
-                            className="group w-full text-left px-5 py-3.5 hover:bg-zinc-700/20 transition-colors flex items-center justify-between"
-                          >
-                            <span className="text-sm text-zinc-300 group-hover:text-emerald-400 transition-colors flex-1 truncate">
-                              {song}
-                            </span>
-                            <svg
-                              className={`w-4 h-4 text-zinc-600 group-hover:text-emerald-500 transition-all flex-shrink-0 ml-2 ${selectedSong === song ? 'rotate-180' : ''}`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-                          
-                          {/* Inline Dropdown */}
-                          {selectedSong === song && (
-                            <div className="px-5 py-4 bg-zinc-900/50 border-t border-zinc-700/30">
-                              <div className="space-y-2.5">
-                                <a
-                                  href={`https://open.spotify.com/search/${encodeURIComponent(song)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-3 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all group"
-                                >
-                                  <SpotifyIcon className="w-5 h-5 text-emerald-400" />
-                                  <span className="flex-1 text-sm font-medium text-emerald-400 group-hover:text-emerald-300">
-                                    Open in Spotify
-                                  </span>
-                                  <ExternalLinkIcon className="w-4 h-4 text-emerald-400" />
-                                </a>
-
-                                <a
-                                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(song)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-3 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all group"
-                                >
-                                  <YouTubeIcon className="w-5 h-5 text-red-400" />
-                                  <span className="flex-1 text-sm font-medium text-red-400 group-hover:text-red-300">
-                                    Open in YouTube
-                                  </span>
-                                  <ExternalLinkIcon className="w-4 h-4 text-red-400" />
-                                </a>
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="px-5 py-12 text-center">
-                  <p className="text-sm text-zinc-600">No recently played songs</p>
-                </div>
-              )}
-            </div>
-          </div>
+          <RecentlyPlayed historyTitles={playlist.historyTitles} />
         </div>
 
         {/* Footer */}
