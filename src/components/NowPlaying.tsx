@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon } from './icons';
 import { LoadingSpinner } from './Spinner';
+import { AudioVisualizer } from './AudioVisualizer';
+import { Reveal } from './Reveal';
 import type {
   NowPlayingProps,
   PlayingStateProps,
@@ -12,8 +15,6 @@ import type {
 } from '@/types/music';
 import type { IconProps } from '@/types/common';
 import { OFFLINE_MESSAGES, EMPTY_STATE_MESSAGES, ASSETS } from '@/constants';
-
-// ==================== Constants ====================
 
 // ==================== Utility Functions ====================
 
@@ -77,8 +78,8 @@ const NoMusicIcon = () => (
 
 // ==================== Sub Components ====================
 
-const CardHeader = () => (
-  <div className="px-3 py-2 border-b border-emerald-500/20 bg-emerald-500/5">
+const CardHeader = ({ className = '' }: { className?: string }) => (
+  <div className={`px-3 py-2 border-b border-emerald-500/20 bg-emerald-500/5 relative z-20 ${className}`} style={{ height: '40px' }}>
     <h3 className="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
       <MusicIcon />
       Now Playing
@@ -105,11 +106,13 @@ const InfoField = ({
   labelColor = "text-emerald-400",
   textSize = "text-base"
 }: InfoFieldProps) => (
-  <div>
-    <span className={`${labelColor} text-[10px] font-medium uppercase tracking-wide block mb-1`}>
+  <div className="relative">
+    <span className={`${labelColor} text-[10px] font-semibold uppercase tracking-wider block mb-1.5 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
       {label}
     </span>
-    <p className={`${textSize} font-bold text-white leading-tight`}>
+    <p className={`${textSize} font-bold text-white leading-tight relative z-10`} style={{
+      textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5)'
+    }}>
       {value}
     </p>
   </div>
@@ -152,6 +155,43 @@ const EasterEggDisplay = () => (
     />
   </div>
 );
+
+const CopyIcon = ({ className = "w-4 h-4" }: IconProps) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+  </svg>
+);
+
+const CopyButton = ({ songText }: { songText: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(songText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <div className="relative group">
+      <button
+        onClick={handleCopy}
+        className="p-2 rounded-lg bg-zinc-800/80 backdrop-blur-sm hover:bg-zinc-700/90 transition-colors text-zinc-300 hover:text-emerald-400 border border-zinc-700/50 shadow-lg"
+        aria-label="Copy song and artist"
+      >
+        <CopyIcon className="w-4 h-4" />
+      </button>
+      
+      {/* Tooltip */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
+        {copied ? 'Copied!' : 'Copy song and artist'}
+      </div>
+    </div>
+  );
+};
 
 const PlayButton = ({ 
   onClick, 
@@ -197,7 +237,7 @@ const SearchLinks = ({ songQuery }: SearchLinksProps) => (
       href={`https://open.spotify.com/search/${encodeURIComponent(songQuery)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-md transition-all text-xs font-medium text-emerald-400 hover:text-emerald-300"
+      className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-500/40 backdrop-blur-sm hover:bg-emerald-500/60 rounded-md transition-all text-xs font-medium text-white hover:text-emerald-100 border border-emerald-500/30 shadow-lg"
     >
       <SpotifyIcon className="w-4 h-4" />
       Spotify
@@ -206,7 +246,7 @@ const SearchLinks = ({ songQuery }: SearchLinksProps) => (
       href={`https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-all text-xs font-medium text-red-400 hover:text-red-300"
+      className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-500/40 backdrop-blur-sm hover:bg-red-500/60 rounded-md transition-all text-xs font-medium text-white hover:text-red-100 border border-red-500/30 shadow-lg"
     >
       <YouTubeIcon className="w-4 h-4" />
       YouTube
@@ -264,7 +304,7 @@ const PlayingState = ({
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
-      {/* Album Artwork or Easter Egg - Matches info container height */}
+      {/* Album Artwork or Easter Egg */}
       <div className="flex-shrink-0 mx-auto sm:mx-0 h-auto sm:h-auto">
         {showEasterEgg ? (
           <EasterEggDisplay />
@@ -273,34 +313,40 @@ const PlayingState = ({
         )}
       </div>
       
-      {/* Right Side: Song Info and Controls */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Play Button - Hidden on mobile */}
-        <div className="hidden sm:block mb-2">
-          <PlayButton 
-            onClick={onPlayButtonClick}
-            disabled={showEasterEgg}
-            message={clickMessage}
-          />
-        </div>
-        
-        {/* Song Info */}
-        <div className="space-y-3 text-center sm:text-left mb-4">
-          <InfoField 
-            label="Artist" 
-            value={songInfo.artist}
-            textSize={textSizeClass}
-          />
-          <InfoField 
-            label="Song" 
-            value={songInfo.title}
-            textSize={textSizeClass}
-          />
-        </div>
-        
-        {/* Search Links - At bottom */}
-        <div className="mt-auto">
-          <SearchLinks songQuery={currentSong} />
+      {/* Right Side: Song Info */}
+      <div className="flex-1 relative min-h-[208px] sm:min-h-[208px]">
+        {/* Song Info and Controls */}
+        <div className="relative z-10 h-full flex flex-col">
+          {/* Play Button - Hidden on mobile */}
+          <div className="hidden sm:block mb-2">
+            <PlayButton 
+              onClick={onPlayButtonClick}
+              disabled={showEasterEgg}
+              message={clickMessage}
+            />
+          </div>
+          
+          {/* Song Info */}
+          <div className="space-y-3 text-center sm:text-left mb-4">
+            <InfoField 
+              label="Artist" 
+              value={songInfo.artist}
+              textSize={textSizeClass}
+            />
+            <InfoField 
+              label="Song" 
+              value={songInfo.title}
+              textSize={textSizeClass}
+            />
+          </div>
+          
+          {/* Search Links and Copy Button - At bottom */}
+          <div className="mt-auto flex flex-col gap-2">
+            <div className="flex items-center justify-center sm:justify-start gap-2">
+              <SearchLinks songQuery={currentSong} />
+              <CopyButton songText={currentSong} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -336,11 +382,19 @@ export function NowPlaying({
   };
 
   return (
-    <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden">
-      <CardHeader />
-      <div className="p-3">
-        {renderContent()}
+    <Reveal>
+      <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden relative">
+        <CardHeader className="relative z-20" />
+        
+        {/* Visualizer as background - starts below header */}
+        <div className="absolute left-0 right-0 bottom-0 rounded-b-xl" style={{ top: '40px' }}>
+          <AudioVisualizer isActive={!isLoading && !isOffline && currentSong !== null && !showEasterEgg} className="w-full h-full" />
+        </div>
+        
+        <div className="p-3 relative z-10">
+          {renderContent()}
+        </div>
       </div>
-    </div>
+    </Reveal>
   );
 }

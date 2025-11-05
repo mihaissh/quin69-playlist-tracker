@@ -99,7 +99,13 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                     </button>
                     
                     {/* Inline Dropdown */}
-                    {selectedSong === song && (
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        selectedSong === song
+                          ? 'max-h-32 opacity-100'
+                          : 'max-h-0 opacity-0'
+                      }`}
+                    >
                       <div className="px-5 py-4 bg-zinc-900/50 border-t border-zinc-700/30">
                         <div className="flex gap-2.5">
                           <a
@@ -129,7 +135,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                           </a>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </>
                 )}
               </div>

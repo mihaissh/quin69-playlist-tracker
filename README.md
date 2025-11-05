@@ -35,7 +35,3 @@ npm run build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view.
-
-## License
-
-MIT License - Contributions welcome!
