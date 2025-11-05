@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef, lazy, Suspense } from 'react';
 import { Header } from '@/components/Header';
 import { NowPlaying } from '@/components/NowPlaying';
+import { Reveal } from '@/components/Reveal';
 import type { PlaylistData, SongWithTimestamp } from '@/types/playlist';
 import {
   UPDATE_INTERVAL_MS,
@@ -25,6 +26,7 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(true);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [streamStatusChecked, setStreamStatusChecked] = useState(false);
   const [error, setError] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
@@ -102,6 +104,29 @@ export default function Home() {
       console.error('Error fetching album art:', err);
       setAlbumArt(null);
     }
+  }, []);
+
+  // Fast initial stream status check - runs before first render
+  useEffect(() => {
+    const initialCheck = async () => {
+      try {
+        const response = await fetch('https://decapi.me/twitch/uptime/quin69', {
+          cache: 'no-cache',
+        });
+        const text = await response.text();
+        const isLive = !text.toLowerCase().includes('offline') && 
+                       !text.toLowerCase().includes('error') &&
+                       text.trim() !== '';
+        setIsStreamLive(isLive);
+        setStreamStatusChecked(true);
+      } catch (err) {
+        console.error('Error checking initial stream status:', err);
+        setIsStreamLive(false);
+        setStreamStatusChecked(true); // Still mark as checked to proceed
+      }
+    };
+    
+    initialCheck();
   }, []);
 
   const updatePlaylist = useCallback(async () => {
@@ -323,13 +348,25 @@ export default function Home() {
     return { currentSongTitle, historyTitles, historySongs, isOffline };
   }
 
+  // Don't render main content until stream status is checked
+  if (!streamStatusChecked) {
+    return (
+      <div className="min-h-screen bg-zinc-900 text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm text-zinc-500">Checking stream status...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-zinc-900 text-white flex flex-col">
       {/* Main Container */}
       <div className="w-full max-w-3xl mx-auto px-6 py-8 flex-grow flex flex-col">
-        <Header isOffline={playlist.isOffline} hasError={error} />
+        <Header isOffline={!isStreamLive} hasError={error} />
 
-        {/* Vertical 2-Card Layout */}
+        {/* Vertical Card Layout */}
         <div className="space-y-6 flex-grow">
           {/* Card 1: Now Playing */}
           <NowPlaying
@@ -353,12 +390,14 @@ export default function Home() {
               </div>
             </div>
           }>
-            <RecentlyPlayed historySongs={playlist.historySongs} />
+            <Reveal delay={0.15}>
+              <RecentlyPlayed historySongs={playlist.historySongs} />
+            </Reveal>
           </Suspense>
         </div>
 
         {/* Footer */}
-        <footer className="mt-6 pt-6 text-center space-y-2">
+        <footer className="mt-6 pt-6 text-center space-y-2 animate-fade-in delay-300">
           <p className="text-xs text-zinc-600">
             Updates every 30s
           </p>

@@ -28,14 +28,6 @@ export const MAX_HISTORY_SONGS = 50;
 export const EASTER_EGG_COOLDOWN_MS = 5 * 60 * 1000;
 
 /**
- * UI Size constants
- */
-export const UI_SIZES = {
-  ARTWORK_SIZE: "w-22 h-22",
-  LABEL_SIZE: "text-[11px]"
-} as const;
-
-/**
  * Asset paths
  */
 export const ASSETS = {
@@ -43,6 +35,5 @@ export const ASSETS = {
   PROFILE_IMAGE: 'quin69.png',
   BEDGE_EMOTE: 'Bedge-2x.webp',
   EASTER_EGG_GIF: 'ABOBA.gif',
-  SPINNER_SVG: 'SvgSpinnersBouncingBall.svg'
 } as const;
 

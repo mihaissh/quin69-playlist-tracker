@@ -32,3 +32,6 @@ npm run dev
 
 # Build for production
 npm run build
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view.
