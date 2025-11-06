@@ -101,21 +101,10 @@ export function useAlbumArt(): UseAlbumArtReturn {
 
       // Fetch album artwork from iTunes
       const artworkUrl = await fetchAlbumArtFromItunes(artist, track);
-      
-      if (artworkUrl) {
-        console.log('✅ Album art fetched from iTunes');
-      } else {
-        console.warn('⚠️ No album art found for:', songTitle);
-      }
 
       if (signal.aborted) return;
 
-      if (artworkUrl) {
-        setAlbumArt(artworkUrl);
-      } else {
-        console.warn('⚠️ No album art found for:', songTitle);
-        setAlbumArt(null);
-      }
+      setAlbumArt(artworkUrl);
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         return; // Silently ignore abort errors
