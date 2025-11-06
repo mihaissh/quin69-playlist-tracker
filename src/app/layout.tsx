@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   title: "Quin69 Playlist Tracker",
@@ -22,12 +29,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://logs.ivr.fi" />
         <link rel="dns-prefetch" href="https://open.spotify.com" />
         <link rel="dns-prefetch" href="https://www.youtube.com" />
-        {/* Google Fonts - Inter for modern, clean typography */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased font-sans">
+      <body className={`${inter.className} antialiased font-sans`}>
         {children}
       </body>
     </html>
