@@ -80,20 +80,23 @@ export default function Home() {
     albumArtAbortControllerRef.current = new AbortController();
     
     try {
-      // Use iTunes Search API to find album artwork with optimized image size
+      // Use Spotify API to find album artwork
       const response = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(songTitle)}&entity=song&limit=1`,
+        `/api/spotify/artwork?q=${encodeURIComponent(songTitle)}`,
         {
           signal: albumArtAbortControllerRef.current.signal,
           cache: 'force-cache', // Aggressively cache album art
         }
       );
+      
+      if (!response.ok) {
+        throw new Error(`Spotify API error: ${response.statusText}`);
+      }
+      
       const data = await response.json();
       
-      if (data.results && data.results.length > 0) {
-        // Use 300x300 for better performance on 3G (was 600x600)
-        const artworkUrl = data.results[0].artworkUrl100?.replace('100x100', '300x300');
-        setAlbumArt(artworkUrl || null);
+      if (data.artworkUrl) {
+        setAlbumArt(data.artworkUrl);
       } else {
         setAlbumArt(null);
       }
@@ -399,7 +402,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-6 pt-6 text-center space-y-2 animate-fade-in delay-300">
           <p className="text-xs text-zinc-600">
-            Updates every 30s
+            Updates every 15s
           </p>
           <p className="text-xs text-zinc-500">
             Made with{' '}
