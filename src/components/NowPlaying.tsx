@@ -314,7 +314,7 @@ const PlayingState = ({
       </div>
       
       {/* Right Side: Song Info */}
-      <div className="flex-1 relative min-h-[208px] sm:min-h-[208px]">
+      <div className="flex-1 relative">
         {/* Song Info and Controls */}
         <div className="relative z-10 h-full flex flex-col">
           {/* Play Button - Hidden on mobile */}

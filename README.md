@@ -6,7 +6,7 @@ Track Twitch.tv/Quin69's chat-requested songs in real-time.
 
 ## Features
 
-- 🎵 Auto-refreshes every 30 seconds
+- 🎵 Auto-refreshes every 15 seconds
 - 🔗 Search songs on Spotify & YouTube
 - 📱 Responsive design
 - ⚡ Fast & lightweight
@@ -23,14 +23,30 @@ Next.js 14 • TypeScript • Tailwind CSS
 
 **Requirements:** Node.js 18+
 
+### Setup
+
+1. **Install dependencies:**
 ```bash
-# Install
 npm install
+```
 
-# Run dev server
+2. **Configure Spotify API (for album artwork):**
+   - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - Create a new app
+   - Copy your **Client ID** and **Client Secret**
+   - Create a `.env.local` file in the root directory:
+   ```env
+   SPOTIFY_CLIENT_ID=your_spotify_client_id_here
+   SPOTIFY_CLIENT_SECRET=your_spotify_client_secret_here
+   ```
+
+3. **Run dev server:**
+```bash
 npm run dev
+```
 
-# Build for production
+4. **Build for production:**
+```bash
 npm run build
 ```
 

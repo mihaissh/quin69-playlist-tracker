@@ -3,9 +3,10 @@
  */
 
 /**
- * Playlist update interval (30 seconds)
+ * Playlist update interval (15 seconds)
+ * Balanced for responsiveness while being respectful to the API
  */
-export const UPDATE_INTERVAL_MS = 30000;
+export const UPDATE_INTERVAL_MS = 15000;
 
 /**
  * Number of clicks required to trigger the easter egg

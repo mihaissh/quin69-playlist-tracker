@@ -183,9 +183,9 @@ export function AudioVisualizer({ className = '', isActive = true }: AudioVisual
 
         // Draw shape
         ctx.save();
-        ctx.globalAlpha = opacity * 0.15; // Subtle background
+        ctx.globalAlpha = opacity * 0.18; // Subtle background
         
-        const colorRgba = `rgba(${shape.color.r}, ${shape.color.g}, ${shape.color.b}, ${opacity * 0.15})`;
+        const colorRgba = `rgba(${shape.color.r}, ${shape.color.g}, ${shape.color.b}, ${opacity * 0.18})`;
         ctx.fillStyle = colorRgba;
         ctx.strokeStyle = colorRgba;
         ctx.lineWidth = 1;
