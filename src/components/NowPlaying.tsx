@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon } from './icons';
 import { LoadingSpinner } from './Spinner';
@@ -118,20 +119,21 @@ const InfoField = ({
   </div>
 );
 
-const AlbumArtwork = ({ 
-  src, 
-  alt = "Album Art" 
+const AlbumArtwork = ({
+  src,
+  alt = "Album Art"
 }: AlbumArtworkProps) => {
   if (src) {
     return (
-      <div className="w-52 h-52 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-        <img 
-          src={src} 
-          alt={alt} 
-          className="w-full h-full object-cover" 
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
+      <div className="relative h-52 w-52 flex-shrink-0 overflow-hidden rounded-lg shadow-lg">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="208px"
+          className="object-cover"
+          priority
+          unoptimized
         />
       </div>
     );
@@ -145,13 +147,15 @@ const AlbumArtwork = ({
 };
 
 const EasterEggDisplay = () => (
-  <div className="w-52 h-52 rounded-lg flex items-center justify-center flex-shrink-0 bg-zinc-900/50">
-    <img
+  <div className="relative flex h-52 w-52 flex-shrink-0 items-center justify-center rounded-lg bg-zinc-900/50">
+    <Image
       src={getAssetPath(ASSETS.EASTER_EGG_GIF)}
       alt="Easter Egg"
-      className="w-full h-full object-contain animate-fade-in-out"
+      fill
+      sizes="208px"
+      className="object-contain animate-fade-in-out"
       loading="lazy"
-      decoding="async"
+      unoptimized
     />
   </div>
 );
@@ -260,13 +264,15 @@ const OfflineState = () => {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       <div className="flex-shrink-0 mx-auto sm:mx-0">
-        <div className="w-52 h-52 rounded-lg overflow-hidden shadow-lg">
-          <img
+        <div className="relative h-52 w-52 overflow-hidden rounded-lg shadow-lg">
+          <Image
             src={getAssetPath(ASSETS.BEDGE_EMOTE)}
             alt="Bedge"
-            className="w-full h-full object-cover"
-            loading="eager"
-            decoding="async"
+            fill
+            sizes="208px"
+            className="object-cover"
+            priority
+            unoptimized
           />
         </div>
       </div>
