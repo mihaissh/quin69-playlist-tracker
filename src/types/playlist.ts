@@ -21,3 +21,20 @@ export interface PlaylistData {
   isOffline: boolean;
 }
 
+/**
+ * Queue song with requester information
+ */
+export interface QueueSong {
+  title: string;
+  requester: string;
+  timestamp: string;
+}
+
+/**
+ * Component props for UpcomingQueue
+ */
+export interface UpcomingQueueProps {
+  queueSongs: QueueSong[];
+  isConnected: boolean;
+  onClearQueue: () => void;
+}
