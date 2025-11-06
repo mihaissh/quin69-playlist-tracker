@@ -6,6 +6,12 @@ import { NextRequest, NextResponse } from 'next/server';
  * to keep client credentials secure.
  */
 
+// Force dynamic rendering since we use searchParams
+// Note: API routes don't work with static export (output: 'export')
+// This route will only work in development or if deployed to a platform that supports API routes
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 interface SpotifyTokenResponse {
   access_token: string;
   token_type: string;
