@@ -1,5 +1,5 @@
 /**
- * Custom hook for fetching album artwork from Spotify
+ * Custom hook for fetching album artwork from iTunes
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -28,38 +28,41 @@ function parseSongInfo(songTitle: string): { artist: string; track: string } {
   };
 }
 
-
 /**
- * Fetch album artwork from Spotify using their Web API
- * Uses Next.js API route in development, or configured serverless function URL in production
+ * Fetch album artwork from iTunes Search API
+ * Free API, no authentication required, works great for static sites
  */
-async function fetchAlbumArtFromSpotify(artist: string, track: string): Promise<string | null> {
-  // Use API route in development, or configured serverless function URL in production
-  const apiUrl = process.env.NEXT_PUBLIC_SPOTIFY_API_URL || '/api/spotify/artwork';
-  
+async function fetchAlbumArtFromItunes(artist: string, track: string): Promise<string | null> {
   try {
-    const url = `${apiUrl}?${new URLSearchParams({
-      artist,
-      track,
+    const searchTerm = artist ? `${artist} ${track}` : track;
+    const url = `https://itunes.apple.com/search?${new URLSearchParams({
+      term: searchTerm,
+      media: 'music',
+      entity: 'song',
+      limit: '1',
     })}`;
     
     const response = await fetch(url);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.warn('Spotify API error:', response.status, errorData);
       return null;
     }
 
     const data = await response.json();
-    return data.artworkUrl || null;
-  } catch (error) {
-    // Only log if it's not a network error (which is expected in static export)
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      // This is expected in production with static export
-      return null;
+    
+    if (data.results && data.results.length > 0) {
+      // iTunes returns artwork at 100x100 by default, we can get larger versions
+      // by replacing the size in the URL
+      const artworkUrl = data.results[0].artworkUrl100;
+      if (artworkUrl) {
+        // Get the highest quality artwork (600x600)
+        return artworkUrl.replace('100x100bb', '600x600bb');
+      }
     }
-    console.error('Error fetching from Spotify API:', error);
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching from iTunes API:', error);
     return null;
   }
 }
@@ -96,19 +99,13 @@ export function useAlbumArt(): UseAlbumArtReturn {
 
       if (signal.aborted) return;
 
-      // Only use Spotify API
-      let artworkUrl: string | null = null;
+      // Fetch album artwork from iTunes
+      const artworkUrl = await fetchAlbumArtFromItunes(artist, track);
       
-      // Try Spotify if we have artist info
-      if (artist) {
-        artworkUrl = await fetchAlbumArtFromSpotify(artist, track);
-        if (artworkUrl) {
-          console.log('✅ Album art fetched from Spotify');
-        } else {
-          console.warn('⚠️ Spotify API did not return artwork for:', songTitle);
-        }
+      if (artworkUrl) {
+        console.log('✅ Album art fetched from iTunes');
       } else {
-        console.warn('⚠️ Cannot fetch artwork: missing artist information');
+        console.warn('⚠️ No album art found for:', songTitle);
       }
 
       if (signal.aborted) return;
