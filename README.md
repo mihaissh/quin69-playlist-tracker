@@ -30,24 +30,16 @@ Next.js 14 • TypeScript • Tailwind CSS
 npm install
 ```
 
-2. **Configure Spotify API (for album artwork):**
-   - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-   - Create a new app
-   - Copy your **Client ID** and **Client Secret**
-   - Create a `.env.local` file in the root directory:
-   ```env
-   SPOTIFY_CLIENT_ID=your_spotify_client_id_here
-   SPOTIFY_CLIENT_SECRET=your_spotify_client_secret_here
-   ```
-
-3. **Run dev server:**
+2. **Run dev server:**
 ```bash
 npm run dev
 ```
 
-4. **Build for production:**
+3. **Build for production:**
 ```bash
 npm run build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view.
+
+Album artwork is automatically fetched from iTunes API (no configuration needed).
