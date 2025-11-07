@@ -3,29 +3,13 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { parseSongInfo } from '@/utils/songParser';
+import { API_ENDPOINTS, ITUNES_IMAGE_SIZES } from '@/constants';
+import { logger } from '@/utils/logger';
 
 interface UseAlbumArtReturn {
   albumArt: string | null;
   fetchAlbumArt: (songTitle: string) => Promise<void>;
-}
-
-/**
- * Parse song title to extract artist and track name
- */
-function parseSongInfo(songTitle: string): { artist: string; track: string } {
-  const parts = songTitle.split(' - ');
-  
-  if (parts.length > 1) {
-    return {
-      artist: parts[0].trim(),
-      track: parts.slice(1).join(' - ').trim(),
-    };
-  }
-  
-  return {
-    artist: '',
-    track: songTitle.trim(),
-  };
 }
 
 /**
@@ -35,7 +19,7 @@ function parseSongInfo(songTitle: string): { artist: string; track: string } {
 async function fetchAlbumArtFromItunes(artist: string, track: string): Promise<string | null> {
   try {
     const searchTerm = artist ? `${artist} ${track}` : track;
-    const url = `https://itunes.apple.com/search?${new URLSearchParams({
+    const url = `${API_ENDPOINTS.ITUNES_SEARCH}?${new URLSearchParams({
       term: searchTerm,
       media: 'music',
       entity: 'song',
@@ -51,18 +35,16 @@ async function fetchAlbumArtFromItunes(artist: string, track: string): Promise<s
     const data = await response.json();
     
     if (data.results && data.results.length > 0) {
-      // iTunes returns artwork at 100x100 by default, we can get larger versions
-      // by replacing the size in the URL
       const artworkUrl = data.results[0].artworkUrl100;
       if (artworkUrl) {
-        // Get the highest quality artwork (600x600)
-        return artworkUrl.replace('100x100bb', '600x600bb');
+        // Get the highest quality artwork
+        return artworkUrl.replace(ITUNES_IMAGE_SIZES.DEFAULT, ITUNES_IMAGE_SIZES.HIGH_QUALITY);
       }
     }
 
     return null;
   } catch (error) {
-    console.error('Error fetching from iTunes API:', error);
+    logger.error('Error fetching from iTunes API:', error);
     return null;
   }
 }
@@ -90,9 +72,9 @@ export function useAlbumArt(): UseAlbumArtReturn {
     const signal = albumArtAbortControllerRef.current.signal;
 
     try {
-      const { artist, track } = parseSongInfo(songTitle);
+      const parsed = parseSongInfo(songTitle);
       
-      if (!track) {
+      if (!parsed.title) {
         setAlbumArt(null);
         return;
       }
@@ -100,7 +82,7 @@ export function useAlbumArt(): UseAlbumArtReturn {
       if (signal.aborted) return;
 
       // Fetch album artwork from iTunes
-      const artworkUrl = await fetchAlbumArtFromItunes(artist, track);
+      const artworkUrl = await fetchAlbumArtFromItunes(parsed.artist, parsed.title);
 
       if (signal.aborted) return;
 
@@ -109,7 +91,7 @@ export function useAlbumArt(): UseAlbumArtReturn {
       if (error instanceof Error && error.name === 'AbortError') {
         return; // Silently ignore abort errors
       }
-      console.error('❌ Error fetching album art:', error);
+      logger.error('Error fetching album art:', error);
       setAlbumArt(null);
     }
   }, []);

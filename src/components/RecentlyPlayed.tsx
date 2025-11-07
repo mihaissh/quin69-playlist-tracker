@@ -2,6 +2,57 @@ import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon } from './icons';
 import type { SongWithTimestamp, RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
+import { logger } from '@/utils/logger';
+
+const CopyIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+  </svg>
+);
+
+const CheckIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const CopyButton = ({ songText }: { songText: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(songText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      logger.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden ${
+        copied
+          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
+          : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-emerald-400 border-zinc-700/50'
+      }`}
+      aria-label="Copy song and artist"
+    >
+      <div className={`relative transition-all duration-300 ${copied ? 'scale-0 rotate-180' : 'scale-100 rotate-0'}`}>
+        <CopyIcon className="w-4 h-4" />
+      </div>
+      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-100 rotate-0' : 'scale-0 -rotate-180'}`}>
+        <CheckIcon className="w-4 h-4" />
+      </div>
+      
+      {/* Ripple effect */}
+      {copied && (
+        <div className="absolute inset-0 rounded-lg bg-emerald-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
+      )}
+    </button>
+  );
+};
 
 export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
@@ -34,7 +85,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
   };
 
   return (
-    <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden">
+    <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden" style={{ boxShadow: '0 8px 16px rgba(0, 0, 0, 0.6)' }}>
       <div className="px-5 py-3 border-b border-zinc-700/50 bg-zinc-800/30">
         <h3 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
           <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,6 +138,9 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                             {timestamp}
                           </span>
                         )}
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <CopyButton songText={song} />
+                        </div>
                       </div>
                       <svg
                         className={`w-4 h-4 text-zinc-600 group-hover:text-emerald-500 transition-all flex-shrink-0 ml-2 ${selectedSong === song ? 'rotate-180' : ''}`}

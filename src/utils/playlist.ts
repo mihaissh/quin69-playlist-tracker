@@ -3,7 +3,7 @@
  */
 
 import type { PlaylistData, SongWithTimestamp } from '@/types/playlist';
-import { MAX_HISTORY_SONGS } from '@/constants';
+import { MAX_HISTORY_SONGS, PLAYLIST_FILTERS, SPEAKER_EMOJI_LENGTH } from '@/constants';
 
 /**
  * Parse chat log lines into playlist data
@@ -24,10 +24,10 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
   // Format: [2025-11-02 16:09:47] #quin69 sheepfarmer: 🔊 Song Title
   const allSongsWithTimestamps = lines
     .filter(line => 
-      line.includes('🔊') && 
-      !line.includes('VIBE') && 
-      !line.toLowerCase().includes('offline') &&
-      !line.includes('Clearing the spotify')
+      line.includes(PLAYLIST_FILTERS.SPEAKER_EMOJI) && 
+      !line.includes(PLAYLIST_FILTERS.EXCLUDE_VIBE) && 
+      !line.toLowerCase().includes(PLAYLIST_FILTERS.EXCLUDE_OFFLINE) &&
+      !line.includes(PLAYLIST_FILTERS.EXCLUDE_CLEARING)
     )
     .map(line => {
       // Extract timestamp from [YYYY-MM-DD HH:MM:SS] format
@@ -35,7 +35,8 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
       const timestamp = timestampMatch ? timestampMatch[1] : '';
       
       // Extract song title after 🔊
-      const songTitle = line.substring(line.indexOf('🔊') + 2).trim();
+      const emojiIndex = line.indexOf(PLAYLIST_FILTERS.SPEAKER_EMOJI);
+      const songTitle = line.substring(emojiIndex + SPEAKER_EMOJI_LENGTH).trim();
       
       return { title: songTitle, timestamp };
     });

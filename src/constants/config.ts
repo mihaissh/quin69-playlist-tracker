@@ -29,6 +29,24 @@ export const MAX_HISTORY_SONGS = 50;
 export const EASTER_EGG_COOLDOWN_MS = 5 * 60 * 1000;
 
 /**
+ * Copy feedback duration (2 seconds)
+ */
+export const COPY_FEEDBACK_DURATION_MS = 2000;
+
+/**
+ * Album art defer delay (0ms for immediate next-tick)
+ */
+export const ALBUM_ART_DEFER_DELAY_MS = 0;
+
+/**
+ * iTunes image sizes
+ */
+export const ITUNES_IMAGE_SIZES = {
+  DEFAULT: '100x100bb',
+  HIGH_QUALITY: '600x600bb',
+} as const;
+
+/**
  * Asset paths
  */
 export const ASSETS = {

@@ -16,24 +16,10 @@ import type {
 } from '@/types/music';
 import type { IconProps } from '@/types/common';
 import { OFFLINE_MESSAGES, EMPTY_STATE_MESSAGES, ASSETS } from '@/constants';
+import { parseSongInfo } from '@/utils/songParser';
+import { logger } from '@/utils/logger';
 
 // ==================== Utility Functions ====================
-
-const parseSongInfo = (songString: string): SongInfo => {
-  const parts = songString.split(' - ');
-  
-  if (parts.length > 1) {
-    return {
-      artist: parts[0].trim(),
-      title: parts.slice(1).join(' - ').trim()
-    };
-  }
-  
-  return {
-    artist: 'Unknown Artist',
-    title: songString
-  };
-};
 
 const getTextSizeClass = (text1: string, text2: string): string => {
   const maxLength = Math.max(text1.length, text2.length);
@@ -125,7 +111,7 @@ const AlbumArtwork = ({
 }: AlbumArtworkProps) => {
   if (src) {
     return (
-      <div className="relative h-52 w-52 flex-shrink-0 overflow-hidden rounded-lg shadow-lg">
+      <div className="relative h-52 w-52 flex-shrink-0 overflow-hidden rounded-lg shadow-2xl shadow-black/60">
         <Image
           src={src}
           alt={alt}
@@ -140,7 +126,7 @@ const AlbumArtwork = ({
   }
 
   return (
-    <div className="w-52 h-52 rounded-lg bg-zinc-800/50 flex items-center justify-center flex-shrink-0">
+    <div className="w-52 h-52 rounded-lg bg-zinc-800/50 flex items-center justify-center flex-shrink-0 shadow-2xl shadow-black/60">
       <MusicIcon className="w-24 h-24 text-zinc-600" />
     </div>
   );
@@ -166,6 +152,12 @@ const CopyIcon = ({ className = "w-4 h-4" }: IconProps) => (
   </svg>
 );
 
+const CheckIcon = ({ className = "w-4 h-4" }: IconProps) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
 const CopyButton = ({ songText }: { songText: string }) => {
   const [copied, setCopied] = useState(false);
 
@@ -175,25 +167,32 @@ const CopyButton = ({ songText }: { songText: string }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      logger.error('Failed to copy:', err);
     }
   };
 
   return (
-    <div className="relative group">
-      <button
-        onClick={handleCopy}
-        className="p-2 rounded-lg bg-zinc-800/80 backdrop-blur-sm hover:bg-zinc-700/90 transition-colors text-zinc-300 hover:text-emerald-400 border border-zinc-700/50 shadow-lg"
-        aria-label="Copy song and artist"
-      >
+    <button
+      onClick={handleCopy}
+      className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden ${
+        copied
+          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
+          : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-emerald-400 border-zinc-700/50'
+      }`}
+      aria-label="Copy song and artist"
+    >
+      <div className={`relative transition-all duration-300 ${copied ? 'scale-0 rotate-180' : 'scale-100 rotate-0'}`}>
         <CopyIcon className="w-4 h-4" />
-      </button>
-      
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
-        {copied ? 'Copied!' : 'Copy song and artist'}
       </div>
-    </div>
+      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-100 rotate-0' : 'scale-0 -rotate-180'}`}>
+        <CheckIcon className="w-4 h-4" />
+      </div>
+      
+      {/* Ripple effect */}
+      {copied && (
+        <div className="absolute inset-0 rounded-lg bg-emerald-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
+      )}
+    </button>
   );
 };
 
@@ -305,7 +304,11 @@ const PlayingState = ({
   onPlayButtonClick, 
   clickMessage 
 }: PlayingStateProps) => {
-  const songInfo = parseSongInfo(currentSong);
+  const parsed = parseSongInfo(currentSong);
+  const songInfo: SongInfo = {
+    artist: parsed.artist,
+    title: parsed.title,
+  };
   const textSizeClass = getTextSizeClass(songInfo.artist, songInfo.title);
 
   return (
@@ -389,7 +392,7 @@ export function NowPlaying({
 
   return (
     <Reveal>
-      <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden relative">
+      <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden relative animate-shadow-pulse">
         <CardHeader className="relative z-20" />
         
         {/* Visualizer as background - starts below header */}
