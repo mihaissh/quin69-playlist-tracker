@@ -4,8 +4,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { PlaylistData } from '@/types/playlist';
-import { UPDATE_INTERVAL_MS } from '@/constants';
+import { UPDATE_INTERVAL_MS, API_ENDPOINTS } from '@/constants';
 import { parsePlaylist } from '@/utils/playlist';
+import { logger } from '@/utils/logger';
 
 interface UsePlaylistProps {
   checkStreamStatus: (signal?: AbortSignal) => Promise<boolean>;
@@ -54,7 +55,7 @@ export function usePlaylist({
       const streamIsLive = await checkStreamStatus(signal);
       
       // Fetch WITH reverse to get newest messages first with optimized caching
-      const response = await fetch('https://logs.ivr.fi/channel/quin69/user/sheepfarmer/?reverse', {
+      const response = await fetch(API_ENDPOINTS.PLAYLIST_LOG, {
         signal,
         cache: 'no-cache', // Always get fresh data for playlist
       });
@@ -65,8 +66,11 @@ export function usePlaylist({
       // Fetch album art if song changed (defer to not block UI)
       if (parsedData.currentSongTitle && parsedData.currentSongTitle !== previousSongTitleRef.current) {
         // Defer album art fetch to next tick to prioritize playlist update
-        setTimeout(() => fetchAlbumArt(parsedData.currentSongTitle!), 0);
-        previousSongTitleRef.current = parsedData.currentSongTitle;
+        const currentSong = parsedData.currentSongTitle;
+        queueMicrotask(() => {
+          fetchAlbumArt(currentSong);
+        });
+        previousSongTitleRef.current = currentSong;
       }
       
       setPlaylist(parsedData);
@@ -80,7 +84,7 @@ export function usePlaylist({
       if (err instanceof Error && err.name === 'AbortError') {
         return; // Silently ignore abort errors
       }
-      console.error('Error fetching playlist:', err);
+      logger.error('Error fetching playlist:', err);
       setError(true);
       
       // Still mark as complete even on error to prevent infinite loading

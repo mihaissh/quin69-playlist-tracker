@@ -2,12 +2,14 @@
  * Custom hook for checking Twitch stream status
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { API_ENDPOINTS, STREAM_STATUS_INDICATORS } from '@/constants';
+import { logger } from '@/utils/logger';
 
 interface UseStreamStatusReturn {
   isStreamLive: boolean;
   streamStatusChecked: boolean;
-  checkStreamStatus: (signal?: AbortSignal) => Promise<boolean>;
+  checkStreamStatus: (signal?: AbortSignal, useCache?: boolean) => Promise<boolean>;
 }
 
 /**
@@ -18,18 +20,16 @@ export function useStreamStatus(): UseStreamStatusReturn {
   const [isStreamLive, setIsStreamLive] = useState(false);
   const [streamStatusChecked, setStreamStatusChecked] = useState(false);
 
-  const checkStreamStatus = useCallback(async (signal?: AbortSignal): Promise<boolean> => {
+  const checkStreamStatus = useCallback(async (signal?: AbortSignal, useCache: boolean = true): Promise<boolean> => {
     try {
-      // Use decapi.me to check if stream is live with caching
-      const response = await fetch('https://decapi.me/twitch/uptime/quin69', {
+      const response = await fetch(API_ENDPOINTS.TWITCH_UPTIME, {
         signal,
-        cache: 'default', // Use browser cache when possible
+        cache: useCache ? 'default' : 'no-cache',
       });
       const text = await response.text();
       
-      // If the response contains "offline" or error message, stream is not live
-      const isLive = !text.toLowerCase().includes('offline') && 
-                     !text.toLowerCase().includes('error') &&
+      const isLive = !text.toLowerCase().includes(STREAM_STATUS_INDICATORS.OFFLINE) && 
+                     !text.toLowerCase().includes(STREAM_STATUS_INDICATORS.ERROR) &&
                      text.trim() !== '';
       
       setIsStreamLive(isLive);
@@ -38,7 +38,7 @@ export function useStreamStatus(): UseStreamStatusReturn {
       if (err instanceof Error && err.name === 'AbortError') {
         return false; // Return false if aborted since we couldn't verify
       }
-      console.error('Error checking stream status:', err);
+      logger.error('Error checking stream status:', err);
       setIsStreamLive(false);
       return false;
     }
@@ -46,26 +46,10 @@ export function useStreamStatus(): UseStreamStatusReturn {
 
   // Fast initial stream status check - runs before first render
   useEffect(() => {
-    const initialCheck = async () => {
-      try {
-        const response = await fetch('https://decapi.me/twitch/uptime/quin69', {
-          cache: 'no-cache',
-        });
-        const text = await response.text();
-        const isLive = !text.toLowerCase().includes('offline') && 
-                       !text.toLowerCase().includes('error') &&
-                       text.trim() !== '';
-        setIsStreamLive(isLive);
-        setStreamStatusChecked(true);
-      } catch (err) {
-        console.error('Error checking initial stream status:', err);
-        setIsStreamLive(false);
-        setStreamStatusChecked(true); // Still mark as checked to proceed
-      }
-    };
-    
-    initialCheck();
-  }, []);
+    checkStreamStatus(undefined, false).then(() => {
+      setStreamStatusChecked(true);
+    });
+  }, [checkStreamStatus]);
 
   return {
     isStreamLive,
