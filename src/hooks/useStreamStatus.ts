@@ -22,16 +22,22 @@ export function useStreamStatus(): UseStreamStatusReturn {
 
   const checkStreamStatus = useCallback(async (signal?: AbortSignal, useCache: boolean = true): Promise<boolean> => {
     try {
+      // Create an abort controller with a 5-second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
       const response = await fetch(API_ENDPOINTS.TWITCH_UPTIME, {
-        signal,
+        signal: signal || controller.signal,
         cache: useCache ? 'default' : 'no-cache',
       });
+      clearTimeout(timeoutId);
+
       const text = await response.text();
-      
-      const isLive = !text.toLowerCase().includes(STREAM_STATUS_INDICATORS.OFFLINE) && 
+
+      const isLive = !text.toLowerCase().includes(STREAM_STATUS_INDICATORS.OFFLINE) &&
                      !text.toLowerCase().includes(STREAM_STATUS_INDICATORS.ERROR) &&
                      text.trim() !== '';
-      
+
       setIsStreamLive(isLive);
       return isLive;
     } catch (err) {

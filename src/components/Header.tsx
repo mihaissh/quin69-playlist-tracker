@@ -1,21 +1,25 @@
+'use client';
+
 import Image from 'next/image';
 import type { HeaderProps } from '@/types/header';
 import { ASSETS } from '@/constants';
 import { Reveal } from './Reveal';
+import { ThemeToggle, ComponentEmote } from './clown-theme';
 
 export function Header({ isOffline, hasError }: HeaderProps) {
   const isOfflineOrError = isOffline || hasError;
-  
+
   return (
-    <header className="mb-8">
+    <header className="mb-8 relative">
+      <ComponentEmote position="top-right" size={56} />
       <Reveal>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           {/* Profile */}
-          <a 
+          <a
             href="https://www.twitch.tv/quin69"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-3 group flex-1"
           >
             <div className="relative">
               <Image
@@ -38,9 +42,15 @@ export function Header({ isOffline, hasError }: HeaderProps) {
             </div>
           </a>
 
-          {/* Status Badge */}
-          <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${isOfflineOrError ? 'bg-zinc-500/10 text-zinc-400' : 'bg-red-500/10 text-red-400'}`}>
-            {isOfflineOrError ? 'Offline' : 'Live'}
+          {/* Right Side Controls */}
+          <div className="flex items-center gap-3">
+            {/* Status Badge */}
+            <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${isOfflineOrError ? 'bg-zinc-500/10 text-zinc-400' : 'bg-red-500/10 text-red-400'}`}>
+              {isOfflineOrError ? 'Offline' : 'Live'}
+            </div>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
           </div>
         </div>
       </Reveal>
