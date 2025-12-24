@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon } from './icons';
+import { ComponentEmote } from './clown-theme';
 import type { SongWithTimestamp, RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
 import { logger } from '@/utils/logger';
@@ -30,9 +33,16 @@ const CopyButton = ({ songText }: { songText: string }) => {
   };
 
   return (
-    <button
+    <div
       onClick={handleCopy}
-      className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden ${
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleCopy();
+        }
+      }}
+      className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden cursor-pointer ${
         copied
           ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
           : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-emerald-400 border-zinc-700/50'
@@ -45,12 +55,12 @@ const CopyButton = ({ songText }: { songText: string }) => {
       <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-100 rotate-0' : 'scale-0 -rotate-180'}`}>
         <CheckIcon className="w-4 h-4" />
       </div>
-      
+
       {/* Ripple effect */}
       {copied && (
         <div className="absolute inset-0 rounded-lg bg-emerald-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
       )}
-    </button>
+    </div>
   );
 };
 
@@ -61,7 +71,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
   // Format timestamp to a readable relative time format
   const formatTimestamp = (timestamp: string): string => {
     if (!timestamp) return '';
-    
+
     try {
       // Parse timestamp in format "YYYY-MM-DD HH:MM:SS"
       const date = new Date(timestamp.replace(' ', 'T') + 'Z'); // Assume UTC
@@ -69,12 +79,12 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
       const diffMs = now.getTime() - date.getTime();
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMs / 3600000);
-      
+
       // Return relative time
       if (diffMins < 1) return 'Just now';
       if (diffMins < 60) return `${diffMins}m ago`;
       if (diffHours < 24) return `${diffHours}h ago`;
-      
+
       // Return formatted time for older songs (using UTC to match timestamp parsing)
       const hours = date.getUTCHours().toString().padStart(2, '0');
       const mins = date.getUTCMinutes().toString().padStart(2, '0');
@@ -85,9 +95,10 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
   };
 
   return (
-    <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden" style={{ boxShadow: '0 8px 16px rgba(0, 0, 0, 0.6)' }}>
+    <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden relative" style={{ boxShadow: '0 8px 16px rgba(0, 0, 0, 0.6)' }}>
+      <ComponentEmote position="bottom-left" size={56} />
       <div className="px-5 py-3 border-b border-zinc-700/50 bg-zinc-800/30">
-        <h3 className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+        <h3 className="text-sm font-medium flex items-center gap-2 text-zinc-400">
           <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>

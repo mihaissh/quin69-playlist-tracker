@@ -1,9 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon } from './icons';
 import { LoadingSpinner } from './Spinner';
 import { AudioVisualizer } from './AudioVisualizer';
 import { Reveal } from './Reveal';
+import { ComponentEmote } from './clown-theme';
 import type {
   NowPlayingProps,
   PlayingStateProps,
@@ -373,6 +376,7 @@ export function NowPlaying({
   onPlayButtonClick,
   clickMessage,
 }: NowPlayingProps) {
+
   const renderContent = () => {
     if (isLoading) return <LoadingState />;
     if (isOffline) return <OfflineState />;
@@ -393,13 +397,14 @@ export function NowPlaying({
   return (
     <Reveal>
       <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden relative animate-shadow-pulse">
+        <ComponentEmote position="bottom-right" size={56} />
         <CardHeader className="relative z-20" />
-        
+
         {/* Visualizer as background - starts below header */}
         <div className="absolute left-0 right-0 bottom-0 rounded-b-xl" style={{ top: '40px' }}>
           <AudioVisualizer isActive={!isLoading && !isOffline && currentSong !== null && !showEasterEgg} className="w-full h-full" />
         </div>
-        
+
         <div className="p-3 relative z-10">
           {renderContent()}
         </div>

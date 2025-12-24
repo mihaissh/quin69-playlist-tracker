@@ -6,6 +6,7 @@ import { NowPlaying } from '@/components/NowPlaying';
 import { Reveal } from '@/components/Reveal';
 import { Footer } from '@/components/Footer';
 import { StreamStatusLoader } from '@/components/StreamStatusLoader';
+import { FloatingEmotes } from '@/components/clown-theme';
 import { useStreamStatus } from '@/hooks/useStreamStatus';
 import { useAlbumArt } from '@/hooks/useAlbumArt';
 import { usePlaylist } from '@/hooks/usePlaylist';
@@ -30,9 +31,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white flex flex-col">
+    <div className="min-h-screen bg-zinc-900 text-white flex flex-col overflow-hidden relative">
+      {/* Waterfall emotes */}
+      <FloatingEmotes />
+
       {/* Main Container */}
-      <div className="w-full max-w-3xl mx-auto px-6 py-8 flex-grow flex flex-col">
+      <div className="w-full max-w-3xl mx-auto px-6 py-8 flex-grow flex flex-col relative z-10">
         <Header isOffline={!isStreamLive} hasError={error} />
 
         {/* Vertical Card Layout */}
