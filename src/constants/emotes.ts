@@ -23,7 +23,8 @@ export const EMOTES = {
   HERO: 'clown-huge.avif',
 } as const;
 
-export const EMOTE_BASE_PATH = '/7tv';
+// Dynamically determine the base path based on environment
+const EMOTE_BASE_PATH = process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker/7tv' : '/7tv';
 
 export const getEmotePath = (emote: string): string => {
   return `${EMOTE_BASE_PATH}/${emote}`;
