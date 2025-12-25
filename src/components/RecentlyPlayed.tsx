@@ -3,105 +3,22 @@
 import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon } from './icons';
 import { ComponentEmote } from './clown-theme';
+import { CopyButton } from './shared';
+import { ClockIcon, ChevronDownIcon } from './shared/icons';
+import { formatTimestamp } from '@/utils/timestamp';
 import type { SongWithTimestamp, RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
-import { logger } from '@/utils/logger';
-
-const CopyIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-  </svg>
-);
-
-const CheckIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-  </svg>
-);
-
-const CopyButton = ({ songText }: { songText: string }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(songText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      logger.error('Failed to copy:', err);
-    }
-  };
-
-  return (
-    <div
-      onClick={handleCopy}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleCopy();
-        }
-      }}
-      className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden cursor-pointer ${
-        copied
-          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
-          : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-emerald-400 border-zinc-700/50'
-      }`}
-      aria-label="Copy song and artist"
-    >
-      <div className={`relative transition-all duration-300 ${copied ? 'scale-0 rotate-180' : 'scale-100 rotate-0'}`}>
-        <CopyIcon className="w-4 h-4" />
-      </div>
-      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-100 rotate-0' : 'scale-0 -rotate-180'}`}>
-        <CheckIcon className="w-4 h-4" />
-      </div>
-
-      {/* Ripple effect */}
-      {copied && (
-        <div className="absolute inset-0 rounded-lg bg-emerald-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
-      )}
-    </div>
-  );
-};
 
 export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
   const hasHistory = historySongs.length > 0;
-
-  // Format timestamp to a readable relative time format
-  const formatTimestamp = (timestamp: string): string => {
-    if (!timestamp) return '';
-
-    try {
-      // Parse timestamp in format "YYYY-MM-DD HH:MM:SS"
-      const date = new Date(timestamp.replace(' ', 'T') + 'Z'); // Assume UTC
-      const now = new Date();
-      const diffMs = now.getTime() - date.getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMs / 3600000);
-
-      // Return relative time
-      if (diffMins < 1) return 'Just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffHours < 24) return `${diffHours}h ago`;
-
-      // Return formatted time for older songs (using UTC to match timestamp parsing)
-      const hours = date.getUTCHours().toString().padStart(2, '0');
-      const mins = date.getUTCMinutes().toString().padStart(2, '0');
-      return `${hours}:${mins}`;
-    } catch {
-      return '';
-    }
-  };
 
   return (
     <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden relative" style={{ boxShadow: '0 8px 16px rgba(0, 0, 0, 0.6)' }}>
       <ComponentEmote position="bottom-left" size={56} />
       <div className="px-5 py-3 border-b border-zinc-700/50 bg-zinc-800/30">
         <h3 className="text-sm font-medium flex items-center gap-2 text-zinc-400">
-          <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <ClockIcon className="w-4 h-4 text-zinc-500" />
           Recently Played
           {hasHistory && (
             <span className="ml-auto px-2 py-0.5 bg-zinc-700/50 text-zinc-400 text-xs rounded-full">
@@ -150,17 +67,12 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                           </span>
                         )}
                         <div onClick={(e) => e.stopPropagation()}>
-                          <CopyButton songText={song} />
+                          <CopyButton songText={song} variant="div" />
                         </div>
                       </div>
-                      <svg
+                      <ChevronDownIcon
                         className={`w-4 h-4 text-zinc-600 group-hover:text-emerald-500 transition-all flex-shrink-0 ml-2 ${selectedSong === song ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      />
                     </button>
                     
                     {/* Inline Dropdown */}
