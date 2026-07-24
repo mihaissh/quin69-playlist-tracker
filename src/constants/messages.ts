@@ -35,16 +35,7 @@ export const OFFLINE_MESSAGES: readonly OfflineMessage[] = [
   }
 ] as const;
 
-/**
- * Easter egg click messages
- */
-export const EASTER_EGG_MESSAGES = {
-  COOLDOWN: "ok lil bro stop it",
-  CLICK_MORE: (count: number) => {
-    const clickText = count === 1 ? 'time' : 'times';
-    return `click ${count} more ${clickText}`;
-  }
-} as const;
+
 
 /**
  * Empty state messages

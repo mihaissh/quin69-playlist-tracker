@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,11 +8,13 @@ const inter = Inter({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const basePath = process.env.NODE_ENV === "production" ? "/quin69-playlist-tracker" : "";
+
 export const metadata: Metadata = {
   title: "Quin69 Playlist Tracker",
   description: "Track Twitch.tv/Quin69's chat-requested songs in real-time",
   icons: {
-    icon: `${process.env.NODE_ENV === 'production' ? '/quin69-playlist-tracker' : ''}/favicon.svg`,
+    icon: `${basePath}/favicon.svg`,
   },
 };
 
@@ -32,7 +33,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.youtube.com" />
       </head>
       <body className={`${inter.className} antialiased font-sans`}>
-        <Providers>{children}</Providers>
+        {children}
       </body>
     </html>
   );

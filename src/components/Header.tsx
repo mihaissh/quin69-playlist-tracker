@@ -4,14 +4,13 @@ import Image from 'next/image';
 import type { HeaderProps } from '@/types/header';
 import { ASSETS } from '@/constants';
 import { Reveal } from './Reveal';
-import { ThemeToggle, ComponentEmote } from './clown-theme';
 
-export function Header({ isOffline, hasError }: HeaderProps) {
+export function Header({ isOffline, hasError, streamTitle }: HeaderProps) {
   const isOfflineOrError = isOffline || hasError;
+  const subtitle = streamTitle || 'Song Requests';
 
   return (
     <header className="mb-8 relative">
-      <ComponentEmote position="top-right" size={56} />
       <Reveal>
         <div className="flex items-center justify-between gap-4">
           {/* Profile */}
@@ -27,18 +26,21 @@ export function Header({ isOffline, hasError }: HeaderProps) {
                 alt="Quin69"
                 width={48}
                 height={48}
-                className="h-12 w-12 rounded-full ring-2 ring-emerald-500/20 transition-all group-hover:ring-emerald-500/40"
+                className="h-12 w-12 rounded-full ring-2 ring-white/20 transition-all group-hover:ring-white/40"
                 priority
               />
               <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-zinc-900 ${isOfflineOrError ? 'bg-zinc-500' : 'bg-red-500'}`} />
             </div>
             <div>
-              <h1 className="text-lg font-semibold group-hover:text-emerald-400 transition-colors">
+              <h1 className="text-lg font-semibold group-hover:text-fuchsia-400 transition-colors">
                 Quin69
               </h1>
-              <p className="text-xs text-zinc-500">
-                Song Requests
-              </p>
+              <div className="max-w-[200px] sm:max-w-[300px] overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)' }}>
+                <p className="text-xs text-zinc-400 font-semibold whitespace-nowrap marquee-scroll inline-block">
+                  <span className="pr-8">{subtitle}</span>
+                  <span className="pr-8">{subtitle}</span>
+                </p>
+              </div>
             </div>
           </a>
 
@@ -48,9 +50,6 @@ export function Header({ isOffline, hasError }: HeaderProps) {
             <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${isOfflineOrError ? 'bg-zinc-500/10 text-zinc-400' : 'bg-red-500/10 text-red-400'}`}>
               {isOfflineOrError ? 'Offline' : 'Live'}
             </div>
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
           </div>
         </div>
       </Reveal>

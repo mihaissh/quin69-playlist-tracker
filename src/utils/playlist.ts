@@ -25,7 +25,7 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
   const allSongsWithTimestamps = lines
     .filter(line => 
       line.includes(PLAYLIST_FILTERS.SPEAKER_EMOJI) && 
-      !line.includes(PLAYLIST_FILTERS.EXCLUDE_VIBE) && 
+      !line.toUpperCase().includes(PLAYLIST_FILTERS.EXCLUDE_VIBE) && 
       !line.toLowerCase().includes(PLAYLIST_FILTERS.EXCLUDE_OFFLINE) &&
       !line.includes(PLAYLIST_FILTERS.EXCLUDE_CLEARING)
     )

@@ -27,8 +27,8 @@ describe('formatTimestamp', () => {
   });
 
   it('should return formatted time for timestamps older than 24 hours', () => {
-    const timestamp = '2025-01-14 15:30:00';
-    expect(formatTimestamp(timestamp)).toBe('15:30');
+    const timestamp = '2025-01-14 10:00:00';
+    expect(formatTimestamp(timestamp)).toBe('10:00');
   });
 
   it('should handle empty string', () => {

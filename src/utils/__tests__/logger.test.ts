@@ -7,7 +7,7 @@ describe('logger', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Set NODE_ENV to development for tests
-    process.env.NODE_ENV = 'development';
+    (process.env as any).NODE_ENV = 'development';
   });
 
   afterAll(() => {
@@ -27,13 +27,13 @@ describe('logger', () => {
 
   it('should not log errors in production', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    (process.env as any).NODE_ENV = 'production';
     jest.clearAllMocks();
     
     logger.error('Test error');
     expect(consoleErrorSpy).not.toHaveBeenCalled();
     
-    process.env.NODE_ENV = originalEnv;
+    (process.env as any).NODE_ENV = originalEnv;
   });
 });
 

@@ -10,11 +10,7 @@ export const MusicIcon = ({ className = "w-3 h-3" }: IconProps) => (
   </svg>
 );
 
-export const PlayIcon = ({ className = "w-6 h-6" }: IconProps) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M8 5v14l11-7z"/>
-  </svg>
-);
+
 
 export const NoMusicIcon = ({ className = "w-8 h-8" }: IconProps) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">

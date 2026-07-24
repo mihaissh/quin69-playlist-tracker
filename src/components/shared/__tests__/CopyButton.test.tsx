@@ -1,13 +1,15 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { CopyButton } from '../CopyButton';
 
-// Mock clipboard API
+// Mock clipboard API robustly
 const mockWriteText = jest.fn();
-Object.assign(navigator, {
-  clipboard: {
+Object.defineProperty(navigator, 'clipboard', {
+  value: {
     writeText: mockWriteText,
   },
+  configurable: true,
+  writable: true,
 });
 
 describe('CopyButton', () => {
@@ -17,7 +19,9 @@ describe('CopyButton', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     jest.useRealTimers();
   });
 
@@ -35,58 +39,59 @@ describe('CopyButton', () => {
   });
 
   it('copies text to clipboard on click', async () => {
-    const user = userEvent.setup({ delay: null });
     mockWriteText.mockResolvedValue(undefined);
 
     render(<CopyButton songText="Artist - Song" />);
     const button = screen.getByRole('button', { name: /copy song and artist/i });
 
-    await user.click(button);
+    fireEvent.click(button);
 
-    expect(mockWriteText).toHaveBeenCalledWith('Artist - Song');
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalledWith('Artist - Song');
+    });
   });
 
   it('shows copied state after clicking', async () => {
-    const user = userEvent.setup({ delay: null });
     mockWriteText.mockResolvedValue(undefined);
 
     render(<CopyButton songText="Test Song" />);
     const button = screen.getByRole('button', { name: /copy song and artist/i });
 
-    await user.click(button);
+    fireEvent.click(button);
 
     // Check for check icon (copied state)
     await waitFor(() => {
-      const checkIcon = button.querySelector('svg');
-      expect(checkIcon).toBeInTheDocument();
+      // In the copied state, we expect the check icon element or ripple effect to be active
+      const svgs = button.querySelectorAll('svg');
+      expect(svgs.length).toBeGreaterThan(0);
     });
   });
 
   it('handles keyboard events when variant is div', async () => {
-    const user = userEvent.setup({ delay: null });
     mockWriteText.mockResolvedValue(undefined);
 
     render(<CopyButton songText="Test Song" variant="div" />);
     const div = screen.getByRole('button', { name: /copy song and artist/i });
 
-    await user.keyboard('{Enter}');
+    fireEvent.keyDown(div, { key: 'Enter', code: 'Enter' });
 
-    expect(mockWriteText).toHaveBeenCalledWith('Test Song');
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalledWith('Test Song');
+    });
   });
 
   it('handles copy errors gracefully', async () => {
-    const user = userEvent.setup({ delay: null });
     const consoleError = jest.spyOn(console, 'error').mockImplementation();
     mockWriteText.mockRejectedValue(new Error('Clipboard error'));
 
     render(<CopyButton songText="Test Song" />);
     const button = screen.getByRole('button', { name: /copy song and artist/i });
 
-    await user.click(button);
+    fireEvent.click(button);
 
-    // Should not throw, just log error
-    expect(mockWriteText).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalled();
+    });
     consoleError.mockRestore();
   });
 });
-

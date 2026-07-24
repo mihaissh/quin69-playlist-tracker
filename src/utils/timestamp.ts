@@ -13,6 +13,7 @@ export function formatTimestamp(timestamp: string): string {
   try {
     // Parse timestamp in format "YYYY-MM-DD HH:MM:SS"
     const date = new Date(timestamp.replace(' ', 'T') + 'Z'); // Assume UTC
+    if (isNaN(date.getTime())) return '';
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
