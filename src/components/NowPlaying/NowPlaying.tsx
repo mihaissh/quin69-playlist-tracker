@@ -1,24 +1,32 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { Reveal } from '@/components/Reveal';
-import { AudioVisualizer } from '@/components/AudioVisualizer';
-import { ComponentEmote } from '@/components/clown-theme';
 import { CardHeader, LoadingState, NoSongState, OfflineState, PlayingState } from './';
+import { useAlbumColors } from '@/hooks/useAlbumColors';
 import type { NowPlayingProps } from '@/types/music';
 
-/**
- * Main NowPlaying component
- * Displays current song information with album art and search links
- */
 export function NowPlaying({
   isLoading,
   isOffline,
   currentSong,
   albumArt,
-  showEasterEgg,
-  onPlayButtonClick,
-  clickMessage,
 }: NowPlayingProps) {
+  const [c1, c2, c3] = useAlbumColors(albumArt);
+  const [isWaveFading, setIsWaveFading] = useState(false);
+  const prevSongRef = useRef(currentSong);
+
+  useEffect(() => {
+    if (prevSongRef.current !== currentSong) {
+      setIsWaveFading(true);
+      const timer = setTimeout(() => {
+        prevSongRef.current = currentSong;
+        setIsWaveFading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentSong]);
+
   const renderContent = () => {
     if (isLoading) return <LoadingState />;
     if (isOffline) return <OfflineState />;
@@ -27,9 +35,6 @@ export function NowPlaying({
         <PlayingState
           currentSong={currentSong}
           albumArt={albumArt}
-          showEasterEgg={showEasterEgg}
-          onPlayButtonClick={onPlayButtonClick}
-          clickMessage={clickMessage}
         />
       );
     }
@@ -38,20 +43,27 @@ export function NowPlaying({
 
   return (
     <Reveal>
-      <div className="bg-zinc-800/50 rounded-xl border border-emerald-500/30 overflow-hidden relative animate-shadow-pulse">
-        <ComponentEmote position="bottom-right" size={56} />
-        <CardHeader className="relative z-20" />
-
-        {/* Visualizer as background - starts below header */}
-        <div className="absolute left-0 right-0 bottom-0 rounded-b-xl" style={{ top: '40px' }}>
-          <AudioVisualizer 
-            isActive={!isLoading && !isOffline && currentSong !== null && !showEasterEgg} 
-            className="w-full h-full" 
+      <div 
+        className={`rounded-xl p-[2.5px] dynamic-border-wave transition-all duration-700 ease-in-out ${
+          isWaveFading ? 'opacity-30 filter blur-[1px]' : 'opacity-100 filter blur-none'
+        }`}
+        style={{
+          '--album-c1': c1,
+          '--album-c2': c2,
+          '--album-c3': c3,
+        } as React.CSSProperties}
+      >
+        <div className="bg-zinc-900 rounded-[9.5px] overflow-hidden relative">
+          <div 
+            className={`absolute inset-0 dynamic-bg-wave pointer-events-none z-0 transition-opacity duration-700 ease-in-out ${
+              isWaveFading ? 'opacity-0' : 'opacity-[0.09]'
+            }`}
           />
-        </div>
+          <CardHeader className="relative z-20" />
 
-        <div className="p-3 relative z-10">
-          {renderContent()}
+          <div className="p-3 relative z-10">
+            {renderContent()}
+          </div>
         </div>
       </div>
     </Reveal>

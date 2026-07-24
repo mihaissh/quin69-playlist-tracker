@@ -1,43 +1,81 @@
 /**
- * Optimized CSS-based Spinner Component
- * Uses CSS animations for better performance and reliability on slow networks
+ * Iconify svg-spinners:blocks-wave Loading Spinner Component
  */
 
 import type { SpinnerProps, LoadingSpinnerProps } from '@/types/spinner';
 
 export function Spinner({ 
   className = "w-10 h-10", 
-  size = 32,
+  size = 40,
   color = "currentColor" 
 }: SpinnerProps) {
   return (
     <div 
-      className={`${className} relative inline-block`}
+      className={`${className} relative inline-flex items-center justify-center`}
       style={{ width: size, height: size }}
       aria-label="Loading"
       role="status"
     >
-      {/* Rotating circle spinner - reliable on all connections */}
       <svg 
-        className="animate-spin"
         width={size} 
         height={size} 
         viewBox="0 0 24 24"
-        fill="none"
+        fill={color}
       >
-        <circle 
-          className="opacity-25" 
-          cx="12" 
-          cy="12" 
-          r="10" 
-          stroke={color}
-          strokeWidth="3"
-        />
-        <path 
-          className="opacity-75" 
-          fill={color}
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        />
+        <rect width="7.33" height="7.33" x="1" y="1" fill="currentColor">
+          <animate id="bw0" attributeName="x" begin="0;bw8.end+0.2s" dur="0.6s" values="1;4;1"/>
+          <animate attributeName="y" begin="0;bw8.end+0.2s" dur="0.6s" values="1;4;1"/>
+          <animate attributeName="width" begin="0;bw8.end+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="0;bw8.end+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="8.33" y="1" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.1s" dur="0.6s" values="8.33;11.33;8.33"/>
+          <animate attributeName="y" begin="bw0.begin+0.1s" dur="0.6s" values="1;4;1"/>
+          <animate attributeName="width" begin="bw0.begin+0.1s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.1s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="1" y="8.33" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.1s" dur="0.6s" values="1;4;1"/>
+          <animate attributeName="y" begin="bw0.begin+0.1s" dur="0.6s" values="8.33;11.33;8.33"/>
+          <animate attributeName="width" begin="bw0.begin+0.1s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.1s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="15.66" y="1" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.2s" dur="0.6s" values="15.66;18.66;15.66"/>
+          <animate attributeName="y" begin="bw0.begin+0.2s" dur="0.6s" values="1;4;1"/>
+          <animate attributeName="width" begin="bw0.begin+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="8.33" y="8.33" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.2s" dur="0.6s" values="8.33;11.33;8.33"/>
+          <animate attributeName="y" begin="bw0.begin+0.2s" dur="0.6s" values="8.33;11.33;8.33"/>
+          <animate attributeName="width" begin="bw0.begin+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="1" y="15.66" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.2s" dur="0.6s" values="1;4;1"/>
+          <animate attributeName="y" begin="bw0.begin+0.2s" dur="0.6s" values="15.66;18.66;15.66"/>
+          <animate attributeName="width" begin="bw0.begin+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.2s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="15.66" y="8.33" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.3s" dur="0.6s" values="15.66;18.66;15.66"/>
+          <animate attributeName="y" begin="bw0.begin+0.3s" dur="0.6s" values="8.33;11.33;8.33"/>
+          <animate attributeName="width" begin="bw0.begin+0.3s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.3s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="8.33" y="15.66" fill="currentColor">
+          <animate attributeName="x" begin="bw0.begin+0.3s" dur="0.6s" values="8.33;11.33;8.33"/>
+          <animate attributeName="y" begin="bw0.begin+0.3s" dur="0.6s" values="15.66;18.66;15.66"/>
+          <animate attributeName="width" begin="bw0.begin+0.3s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.3s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
+        <rect width="7.33" height="7.33" x="15.66" y="15.66" fill="currentColor">
+          <animate id="bw8" attributeName="x" begin="bw0.begin+0.4s" dur="0.6s" values="15.66;18.66;15.66"/>
+          <animate attributeName="y" begin="bw0.begin+0.4s" dur="0.6s" values="15.66;18.66;15.66"/>
+          <animate attributeName="width" begin="bw0.begin+0.4s" dur="0.6s" values="7.33;1.33;7.33"/>
+          <animate attributeName="height" begin="bw0.begin+0.4s" dur="0.6s" values="7.33;1.33;7.33"/>
+        </rect>
       </svg>
     </div>
   );
@@ -52,11 +90,10 @@ export function LoadingSpinner({
 }: LoadingSpinnerProps) {
   return (
     <div className={`flex flex-col items-center gap-3 py-8 ${className}`}>
-      <Spinner className="w-10 h-10 text-emerald-500" />
+      <Spinner className="w-10 h-10 text-white" />
       <span className="text-zinc-500 text-xs uppercase tracking-wider">
         {text}
       </span>
     </div>
   );
 }
-

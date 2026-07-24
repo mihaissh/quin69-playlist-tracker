@@ -1,5 +1,5 @@
 import { parsePlaylist } from '../playlist';
-import { PLAYLIST_FILTERS } from '@/constants';
+import type { SongWithTimestamp } from '../../types/playlist';
 
 describe('parsePlaylist', () => {
   const mockLines = [
@@ -10,7 +10,7 @@ describe('parsePlaylist', () => {
 
   it('should parse current song and history correctly', () => {
     const result = parsePlaylist(mockLines, true);
-    
+
     expect(result.currentSongTitle).toBe('Artist - Song Title');
     expect(result.historySongs).toHaveLength(2);
     expect(result.historySongs[0].title).toBe('Previous Artist - Previous Song');
@@ -20,7 +20,7 @@ describe('parsePlaylist', () => {
 
   it('should extract timestamps correctly', () => {
     const result = parsePlaylist(mockLines, true);
-    
+
     expect(result.historySongs[0].timestamp).toBe('2025-01-15 09:59:00');
     expect(result.historySongs[1].timestamp).toBe('2025-01-15 09:58:00');
   });
@@ -36,7 +36,7 @@ describe('parsePlaylist', () => {
       '[2025-01-15 09:59:00] #quin69 sheepfarmer: 🔊 vibe check',
       '[2025-01-15 09:58:00] #quin69 sheepfarmer: 🔊 offline mode',
     ];
-    
+
     const result = parsePlaylist(linesWithExcluded, true);
     expect(result.currentSongTitle).toBe('Valid Song');
     expect(result.historySongs).toHaveLength(0);
@@ -56,7 +56,7 @@ describe('parsePlaylist', () => {
       '[2025-01-15 09:58:00] #quin69 sheepfarmer: 🔊 Duplicate Song',
       '[2025-01-15 09:57:00] #quin69 sheepfarmer: 🔊 Unique Song',
     ];
-    
+
     const result = parsePlaylist(linesWithDuplicates, true);
     expect(result.currentSongTitle).toBe('Current Song');
     expect(result.historySongs).toHaveLength(2);
@@ -66,15 +66,16 @@ describe('parsePlaylist', () => {
 
   it('should not include current song in history', () => {
     const result = parsePlaylist(mockLines, true);
-    const historyTitles = result.historySongs.map(s => s.title);
+    const historyTitles = result.historySongs.map((s: SongWithTimestamp) => s.title);
     expect(historyTitles).not.toContain('Artist - Song Title');
   });
 
   it('should handle lines without timestamps', () => {
     const linesWithoutTimestamps = [
       'sheepfarmer: 🔊 Song Without Timestamp',
+      'sheepfarmer: 🔊 Another Song Without Timestamp',
     ];
-    
+
     const result = parsePlaylist(linesWithoutTimestamps, true);
     expect(result.currentSongTitle).toBe('Song Without Timestamp');
     expect(result.historySongs[0].timestamp).toBe('');

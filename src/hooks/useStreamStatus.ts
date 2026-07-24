@@ -9,6 +9,7 @@ import { logger } from '@/utils/logger';
 interface UseStreamStatusReturn {
   isStreamLive: boolean;
   streamStatusChecked: boolean;
+  streamTitle: string | null;
   checkStreamStatus: (signal?: AbortSignal, useCache?: boolean) => Promise<boolean>;
 }
 
@@ -19,6 +20,7 @@ interface UseStreamStatusReturn {
 export function useStreamStatus(): UseStreamStatusReturn {
   const [isStreamLive, setIsStreamLive] = useState(false);
   const [streamStatusChecked, setStreamStatusChecked] = useState(false);
+  const [streamTitle, setStreamTitle] = useState<string | null>(null);
 
   const checkStreamStatus = useCallback(async (signal?: AbortSignal, useCache: boolean = true): Promise<boolean> => {
     try {
@@ -39,6 +41,28 @@ export function useStreamStatus(): UseStreamStatusReturn {
                      text.trim() !== '';
 
       setIsStreamLive(isLive);
+
+      // Fetch stream title if live
+      if (isLive) {
+        try {
+          const titleController = new AbortController();
+          const titleTimeoutId = setTimeout(() => titleController.abort(), 5000);
+          const titleResponse = await fetch(API_ENDPOINTS.TWITCH_TITLE, {
+            signal: signal || titleController.signal,
+            cache: useCache ? 'default' : 'no-cache',
+          });
+          clearTimeout(titleTimeoutId);
+          const title = await titleResponse.text();
+          if (title && title.trim() !== '') {
+            setStreamTitle(title.trim());
+          }
+        } catch {
+          // Silently fail — title is non-critical
+        }
+      } else {
+        setStreamTitle(null);
+      }
+
       return isLive;
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
@@ -46,6 +70,7 @@ export function useStreamStatus(): UseStreamStatusReturn {
       }
       logger.error('Error checking stream status:', err);
       setIsStreamLive(false);
+      setStreamTitle(null);
       return false;
     }
   }, []);
@@ -60,6 +85,7 @@ export function useStreamStatus(): UseStreamStatusReturn {
   return {
     isStreamLive,
     streamStatusChecked,
+    streamTitle,
     checkStreamStatus,
   };
 }

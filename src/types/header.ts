@@ -5,5 +5,6 @@
 export interface HeaderProps {
   isOffline: boolean;
   hasError: boolean;
+  streamTitle?: string | null;
 }
 

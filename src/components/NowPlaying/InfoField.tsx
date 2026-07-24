@@ -8,16 +8,16 @@ import type { InfoFieldProps } from '@/types/music';
 export function InfoField({ 
   label, 
   value, 
-  labelColor = "text-emerald-400",
+  labelColor = "text-zinc-400",
   textSize = "text-base"
 }: InfoFieldProps) {
   return (
     <div className="relative">
-      <span className={`${labelColor} text-[10px] font-semibold uppercase tracking-wider block mb-1.5 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
+      <span className={`${labelColor} text-[11px] font-bold uppercase tracking-wider block mb-1 relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
         {label}
       </span>
-      <p className={`${textSize} font-bold text-white leading-tight relative z-10`} style={{
-        textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5)'
+      <p className={`${textSize} font-extrabold text-white leading-snug relative z-10 break-words`} style={{
+        textShadow: '0 2px 10px rgba(0, 0, 0, 0.9), 0 1px 4px rgba(0, 0, 0, 0.8)'
       }}>
         {value}
       </p>

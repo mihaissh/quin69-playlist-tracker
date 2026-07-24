@@ -17,7 +17,6 @@ export type {
   PlayingStateProps,
   InfoFieldProps,
   AlbumArtworkProps,
-  PlayButtonProps,
   SearchLinksProps,
 } from './music';
 

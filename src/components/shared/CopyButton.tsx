@@ -39,10 +39,10 @@ export function CopyButton({ songText, variant = 'button', className = '' }: Cop
     }
   };
 
-  const baseClasses = `p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden ${
+  const baseClasses = `p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden btn-glow-copy ${
     copied
-      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
-      : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-emerald-400 border-zinc-700/50'
+      ? 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/50 shadow-fuchsia-500/20'
+      : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-fuchsia-400 border-zinc-700/50 hover:shadow-fuchsia-500/20 hover:border-fuchsia-500/40'
   } ${className}`;
 
   const content = (
@@ -56,7 +56,7 @@ export function CopyButton({ songText, variant = 'button', className = '' }: Cop
       
       {/* Ripple effect */}
       {copied && (
-        <div className="absolute inset-0 rounded-lg bg-emerald-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
+        <div className="absolute inset-0 rounded-lg bg-fuchsia-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
       )}
     </>
   );
