@@ -37,6 +37,7 @@ export function usePlaylist({
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [error, setError] = useState(false);
   const fetchAbortControllerRef = useRef<AbortController | null>(null);
+  const initialLoadCompleteRef = useRef(false);
   const previousSongTitleRef = useRef<string | null>(null);
 
   const updatePlaylist = useCallback(async () => {
@@ -54,18 +55,18 @@ export function usePlaylist({
       // Check if stream is live on Twitch
       const streamIsLive = await checkStreamStatus(signal);
       
-      // Fetch WITH reverse to get newest messages first with optimized caching
-      const response = await fetch(API_ENDPOINTS.PLAYLIST_LOG, {
+      // Fetch WITH reverse to get newest messages first with cache-busting timestamp
+      const logUrl = `${API_ENDPOINTS.PLAYLIST_LOG}&_t=${Date.now()}`;
+      const response = await fetch(logUrl, {
         signal,
-        cache: 'no-cache', // Always get fresh data for playlist
+        cache: 'no-store',
       });
       const text = await response.text();
       const lines = text.split('\n').filter(line => line.trim() !== '');
       const parsedData = parsePlaylist(lines, streamIsLive);
       
-      // Fetch album art if song changed (defer to not block UI)
+      // Fetch album art if song changed
       if (parsedData.currentSongTitle && parsedData.currentSongTitle !== previousSongTitleRef.current) {
-        // Defer album art fetch to next tick to prioritize playlist update
         const currentSong = parsedData.currentSongTitle;
         queueMicrotask(() => {
           fetchAlbumArt(currentSong);
@@ -76,7 +77,8 @@ export function usePlaylist({
       setPlaylist(parsedData);
       
       // Mark initial load as complete after first successful fetch
-      if (!initialLoadComplete) {
+      if (!initialLoadCompleteRef.current) {
+        initialLoadCompleteRef.current = true;
         setInitialLoadComplete(true);
       }
       setLoading(false);
@@ -87,13 +89,13 @@ export function usePlaylist({
       logger.error('Error fetching playlist:', err);
       setError(true);
       
-      // Still mark as complete even on error to prevent infinite loading
-      if (!initialLoadComplete) {
+      if (!initialLoadCompleteRef.current) {
+        initialLoadCompleteRef.current = true;
         setInitialLoadComplete(true);
       }
       setLoading(false);
     }
-  }, [fetchAlbumArt, checkStreamStatus, initialLoadComplete]);
+  }, [fetchAlbumArt, checkStreamStatus]);
 
   useEffect(() => {
     updatePlaylist();

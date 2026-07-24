@@ -17,13 +17,15 @@ export function NowPlaying({
   const prevSongRef = useRef(currentSong);
 
   useEffect(() => {
-    if (prevSongRef.current !== currentSong) {
+    if (prevSongRef.current && currentSong && prevSongRef.current !== currentSong) {
       setIsWaveFading(true);
       const timer = setTimeout(() => {
-        prevSongRef.current = currentSong;
         setIsWaveFading(false);
       }, 500);
+      prevSongRef.current = currentSong;
       return () => clearTimeout(timer);
+    } else if (currentSong) {
+      prevSongRef.current = currentSong;
     }
   }, [currentSong]);
 
