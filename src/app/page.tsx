@@ -3,6 +3,7 @@
 import { lazy, Suspense } from 'react';
 import { Header } from '@/components/Header';
 import { NowPlaying } from '@/components/NowPlaying';
+import { UpcomingRequests } from '@/components/UpcomingRequests';
 import { Reveal } from '@/components/Reveal';
 import { Footer } from '@/components/Footer';
 import { StreamStatusLoader } from '@/components/StreamStatusLoader';
@@ -36,6 +37,12 @@ export default function Home() {
             currentSong={playlist.currentSongTitle}
             albumArt={albumArt}
           />
+
+          {playlist.upcomingSongs && playlist.upcomingSongs.length > 0 && (
+            <Reveal delay={0.1}>
+              <UpcomingRequests upcomingSongs={playlist.upcomingSongs} />
+            </Reveal>
+          )}
 
           <Suspense fallback={
             <div className="bg-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden">

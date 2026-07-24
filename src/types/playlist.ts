@@ -18,7 +18,12 @@ export interface PlaylistData {
   currentSongTitle: string | null;
   historyTitles: string[];
   historySongs: SongWithTimestamp[];
+  upcomingSongs: QueueSong[];
   isOffline: boolean;
+}
+
+export interface UpcomingRequestsProps {
+  upcomingSongs: QueueSong[];
 }
 
 /**
