@@ -2,7 +2,7 @@
  * Playlist parsing utilities
  */
 
-import type { PlaylistData, SongWithTimestamp } from '@/types/playlist';
+import type { PlaylistData, SongWithTimestamp, QueueSong } from '@/types/playlist';
 import { MAX_HISTORY_SONGS, PLAYLIST_FILTERS, SPEAKER_EMOJI_LENGTH } from '@/constants';
 
 /**
@@ -43,7 +43,7 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
 
   if (allSongsWithTimestamps.length === 0) {
     // No valid songs found
-    return { currentSongTitle: null, historyTitles: [], historySongs: [], isOffline };
+    return { currentSongTitle: null, historyTitles: [], historySongs: [], upcomingSongs: [], isOffline };
   }
 
   // The FIRST song (most recent message) is the current song
@@ -67,6 +67,47 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
   historyTitles = historyTitles.slice(0, MAX_HISTORY_SONGS);
   historySongs = historySongs.slice(0, MAX_HISTORY_SONGS);
 
-  return { currentSongTitle, historyTitles, historySongs, isOffline };
+  return { currentSongTitle, historyTitles, historySongs, upcomingSongs: [], isOffline };
 }
 
+/**
+ * Parse channel log lines for upcoming Channel Point song requests
+ */
+export function parseUpcomingRequests(
+  channelLines: string[], 
+  currentSongTitle: string | null, 
+  historyTitles: string[]
+): QueueSong[] {
+  const playedSet = new Set<string>();
+  if (currentSongTitle) playedSet.add(currentSongTitle.toLowerCase().trim());
+  historyTitles.forEach(t => playedSet.add(t.toLowerCase().trim()));
+
+  const upcoming: QueueSong[] = [];
+  const seenUpcoming = new Set<string>();
+
+  for (const line of channelLines) {
+    if (line.includes(' - ') && !line.includes('sheepfarmer:') && !line.includes('streamelements:') && !line.includes('fossabot:')) {
+      const match = line.match(/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+#\w+\s+([^:]+):\s+(.+)$/);
+      if (match) {
+        const [, timestamp, requester, title] = match;
+        const cleanTitle = title.replace(/\s+/g, ' ').trim();
+        
+        // Filter out non-music messages
+        if (
+          cleanTitle.length <= 120 && 
+          !cleanTitle.toLowerCase().includes('http') && 
+          !cleanTitle.toLowerCase().includes('playing')
+        ) {
+          const norm = cleanTitle.toLowerCase();
+          if (!playedSet.has(norm) && !seenUpcoming.has(norm)) {
+            upcoming.push({ title: cleanTitle, requester, timestamp });
+            seenUpcoming.add(norm);
+          }
+        }
+      }
+    }
+  }
+
+  // Reverse so oldest pending request is first in queue
+  return upcoming.reverse().slice(0, 10);
+}

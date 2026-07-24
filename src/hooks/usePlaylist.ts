@@ -1,11 +1,11 @@
 /**
- * Custom hook for fetching and managing playlist data
+ * Custom hook for fetching and managing playlist data & upcoming channel point requests
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { PlaylistData } from '@/types/playlist';
 import { UPDATE_INTERVAL_MS, API_ENDPOINTS } from '@/constants';
-import { parsePlaylist } from '@/utils/playlist';
+import { parsePlaylist, parseUpcomingRequests } from '@/utils/playlist';
 import { logger } from '@/utils/logger';
 
 interface UsePlaylistProps {
@@ -31,6 +31,7 @@ export function usePlaylist({
     currentSongTitle: null,
     historyTitles: [],
     historySongs: [],
+    upcomingSongs: [],
     isOffline: false,
   });
   const [loading, setLoading] = useState(true);
@@ -55,15 +56,27 @@ export function usePlaylist({
       // Check if stream is live on Twitch
       const streamIsLive = await checkStreamStatus(signal);
       
-      // Fetch WITH reverse to get newest messages first with cache-busting timestamp
       const logUrl = `${API_ENDPOINTS.PLAYLIST_LOG}&_t=${Date.now()}`;
-      const response = await fetch(logUrl, {
-        signal,
-        cache: 'no-store',
-      });
-      const text = await response.text();
-      const lines = text.split('\n').filter(line => line.trim() !== '');
+      const channelUrl = `${API_ENDPOINTS.CHANNEL_LOG}&_t=${Date.now()}`;
+      
+      const [playlistRes, channelRes] = await Promise.all([
+        fetch(logUrl, { signal, cache: 'no-store' }),
+        fetch(channelUrl, { signal, cache: 'no-store' }).catch(() => null)
+      ]);
+
+      const playlistText = await playlistRes.text();
+      const lines = playlistText.replace(/\r/g, '').split('\n').filter(line => line.trim() !== '');
       const parsedData = parsePlaylist(lines, streamIsLive);
+
+      if (channelRes && channelRes.ok) {
+        const channelText = await channelRes.text();
+        const channelLines = channelText.replace(/\r/g, '').split('\n').filter(line => line.trim() !== '');
+        parsedData.upcomingSongs = parseUpcomingRequests(
+          channelLines,
+          parsedData.currentSongTitle,
+          parsedData.historyTitles
+        );
+      }
       
       // Fetch album art if song changed
       if (parsedData.currentSongTitle && parsedData.currentSongTitle !== previousSongTitleRef.current) {
@@ -119,4 +132,3 @@ export function usePlaylist({
     initialLoadComplete,
   };
 }
-
