@@ -6,8 +6,16 @@ import { MusicIcon } from '@/components/shared';
 import { parseSongInfo } from '@/utils/songParser';
 import { API_ENDPOINTS, ITUNES_IMAGE_SIZES } from '@/constants';
 
-// In-memory cache for fetched artwork URLs to prevent duplicate iTunes API calls
+const MAX_CACHE_SIZE = 100;
 const artworkCache = new Map<string, string | null>();
+
+function setCachedArtwork(key: string, value: string | null) {
+  if (artworkCache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = artworkCache.keys().next().value;
+    if (oldestKey) artworkCache.delete(oldestKey);
+  }
+  artworkCache.set(key, value);
+}
 
 async function fetchItunesArt(songTitle: string, signal?: AbortSignal): Promise<string | null> {
   if (!songTitle) return null;
@@ -22,7 +30,7 @@ async function fetchItunesArt(songTitle: string, signal?: AbortSignal): Promise<
     const searchTerm = parsed.artist ? `${parsed.artist} ${parsed.title}` : parsed.title || songTitle;
     
     if (!searchTerm) {
-      artworkCache.set(cleanKey, null);
+      setCachedArtwork(cleanKey, null);
       return null;
     }
 
@@ -35,7 +43,7 @@ async function fetchItunesArt(songTitle: string, signal?: AbortSignal): Promise<
 
     const response = await fetch(url, { signal });
     if (!response.ok) {
-      artworkCache.set(cleanKey, null);
+      setCachedArtwork(cleanKey, null);
       return null;
     }
 
@@ -44,19 +52,18 @@ async function fetchItunesArt(songTitle: string, signal?: AbortSignal): Promise<
       const rawUrl = data.results[0].artworkUrl100;
       if (rawUrl) {
         const highQualityUrl = rawUrl.replace(ITUNES_IMAGE_SIZES.DEFAULT, '300x300bb.jpg');
-        artworkCache.set(cleanKey, highQualityUrl);
+        setCachedArtwork(cleanKey, highQualityUrl);
         return highQualityUrl;
       }
     }
 
-    artworkCache.set(cleanKey, null);
+    setCachedArtwork(cleanKey, null);
     return null;
   } catch (err) {
     if (err instanceof Error && err.name === 'AbortError') {
       return null;
     }
-    // Cache null on network/adblocker failure to avoid repeated failed requests
-    artworkCache.set(cleanKey, null);
+    setCachedArtwork(cleanKey, null);
     return null;
   }
 }

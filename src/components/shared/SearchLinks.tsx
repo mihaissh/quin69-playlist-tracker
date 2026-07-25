@@ -1,6 +1,6 @@
 'use client';
 
-import { SpotifyIcon, YouTubeIcon } from '@/components/icons';
+import { SpotifyIcon, YouTubeIcon } from './icons';
 import type { SearchLinksProps } from '@/types/music';
 
 /**

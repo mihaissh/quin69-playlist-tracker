@@ -29,7 +29,7 @@ export default function Home() {
       <div className="w-full max-w-3xl mx-auto px-6 py-8 flex-grow flex flex-col relative z-10">
         <Header isOffline={!isStreamLive} hasError={error} streamTitle={streamTitle} />
 
-        <div className="space-y-6 flex-grow">
+        <main className="space-y-6 flex-grow">
           <NowPlaying
             isLoading={loading && !initialLoadComplete}
             isOffline={playlist.isOffline}
@@ -51,7 +51,7 @@ export default function Home() {
               <RecentlyPlayed historySongs={playlist.historySongs} />
             </Reveal>
           </Suspense>
-        </div>
+        </main>
 
         <Footer />
       </div>

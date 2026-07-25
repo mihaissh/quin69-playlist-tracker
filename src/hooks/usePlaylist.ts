@@ -1,7 +1,3 @@
-/**
- * Custom hook for fetching and managing playlist data
- */
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { PlaylistData } from '@/types/playlist';
 import { UPDATE_INTERVAL_MS, API_ENDPOINTS } from '@/constants';
@@ -20,9 +16,6 @@ interface UsePlaylistReturn {
   initialLoadComplete: boolean;
 }
 
-/**
- * Hook to manage playlist fetching and updates
- */
 export function usePlaylist({
   checkStreamStatus,
   fetchAlbumArt,
@@ -40,7 +33,6 @@ export function usePlaylist({
   const previousSongTitleRef = useRef<string | null>(null);
 
   const updatePlaylist = useCallback(async () => {
-    // Cancel previous fetch if still in progress
     if (fetchAbortControllerRef.current) {
       fetchAbortControllerRef.current.abort();
     }
@@ -51,10 +43,8 @@ export function usePlaylist({
     try {
       setError(false);
       
-      // Check if stream is live on Twitch
       const streamIsLive = await checkStreamStatus(signal);
       
-      // If stream is offline, do not check for messages
       if (!streamIsLive) {
         setPlaylist({
           currentSongTitle: null,
@@ -69,18 +59,15 @@ export function usePlaylist({
         return;
       }
 
-      // Fetch WITH reverse to get newest messages first with optimized caching
       const response = await fetch(API_ENDPOINTS.PLAYLIST_LOG, {
         signal,
-        cache: 'no-cache', // Always get fresh data for playlist
+        cache: 'no-cache',
       });
       const text = await response.text();
       const lines = text.split('\n').filter(line => line.trim() !== '');
       const parsedData = parsePlaylist(lines, streamIsLive);
       
-      // Fetch album art if song changed (defer to not block UI)
       if (parsedData.currentSongTitle && parsedData.currentSongTitle !== previousSongTitleRef.current) {
-        // Defer album art fetch to next tick to prioritize playlist update
         const currentSong = parsedData.currentSongTitle;
         queueMicrotask(() => {
           fetchAlbumArt(currentSong);
@@ -90,19 +77,17 @@ export function usePlaylist({
       
       setPlaylist(parsedData);
       
-      // Mark initial load as complete after first successful fetch
       if (!initialLoadComplete) {
         setInitialLoadComplete(true);
       }
       setLoading(false);
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        return; // Silently ignore abort errors
+        return;
       }
       logger.error('Error fetching playlist:', err);
       setError(true);
       
-      // Still mark as complete even on error to prevent infinite loading
       if (!initialLoadComplete) {
         setInitialLoadComplete(true);
       }
@@ -116,7 +101,6 @@ export function usePlaylist({
     return () => clearInterval(interval);
   }, [updatePlaylist]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (fetchAbortControllerRef.current) {
@@ -132,4 +116,3 @@ export function usePlaylist({
     initialLoadComplete,
   };
 }
-

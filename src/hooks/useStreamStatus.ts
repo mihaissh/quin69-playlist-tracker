@@ -1,7 +1,3 @@
-/**
- * Custom hook for checking Twitch stream status
- */
-
 import { useState, useEffect, useCallback } from 'react';
 import { API_ENDPOINTS, STREAM_STATUS_INDICATORS } from '@/constants';
 import { logger } from '@/utils/logger';
@@ -13,10 +9,6 @@ interface UseStreamStatusReturn {
   checkStreamStatus: (signal?: AbortSignal, useCache?: boolean) => Promise<boolean>;
 }
 
-/**
- * Hook to manage stream status checking
- * Performs initial check and provides function for subsequent checks
- */
 export function useStreamStatus(): UseStreamStatusReturn {
   const [isStreamLive, setIsStreamLive] = useState(false);
   const [streamStatusChecked, setStreamStatusChecked] = useState(false);
@@ -24,7 +16,6 @@ export function useStreamStatus(): UseStreamStatusReturn {
 
   const checkStreamStatus = useCallback(async (signal?: AbortSignal, useCache: boolean = true): Promise<boolean> => {
     try {
-      // Create an abort controller with a 5-second timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
@@ -42,7 +33,6 @@ export function useStreamStatus(): UseStreamStatusReturn {
 
       setIsStreamLive(isLive);
 
-      // Fetch stream title if live
       if (isLive) {
         try {
           const titleController = new AbortController();
@@ -57,7 +47,7 @@ export function useStreamStatus(): UseStreamStatusReturn {
             setStreamTitle(title.trim());
           }
         } catch {
-          // Silently fail — title is non-critical
+          // Silently fail for non-critical stream title
         }
       } else {
         setStreamTitle(null);
@@ -66,7 +56,7 @@ export function useStreamStatus(): UseStreamStatusReturn {
       return isLive;
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        return false; // Return false if aborted since we couldn't verify
+        return false;
       }
       logger.error('Error checking stream status:', err);
       setIsStreamLive(false);
@@ -75,7 +65,6 @@ export function useStreamStatus(): UseStreamStatusReturn {
     }
   }, []);
 
-  // Fast initial stream status check - runs before first render
   useEffect(() => {
     checkStreamStatus(undefined, false).then(() => {
       setStreamStatusChecked(true);
@@ -89,4 +78,3 @@ export function useStreamStatus(): UseStreamStatusReturn {
     checkStreamStatus,
   };
 }
-

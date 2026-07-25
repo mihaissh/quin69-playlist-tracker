@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon } from './icons';
-import { CopyButton } from './shared';
-import { ClockIcon, ChevronDownIcon } from './shared/icons';
+import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon, ClockIcon, ChevronDownIcon, CopyButton } from '@/components/shared';
 import { HistoryAlbumArt } from './HistoryAlbumArt';
 import { formatTimestamp } from '@/utils/timestamp';
 import type { RecentlyPlayedProps } from '@/types/playlist';
@@ -18,10 +16,8 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
       className="bg-zinc-900/60 backdrop-blur-xl rounded-xl border border-zinc-800/80 overflow-hidden relative shadow-2xl transition-all duration-500 hover:border-zinc-700/60"
       style={{ boxShadow: '0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05)' }}
     >
-      {/* Top indigo light accent */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
 
-      {/* Card Header */}
       <div className="px-5 py-3.5 border-b border-zinc-800/80 bg-gradient-to-r from-zinc-900/90 via-zinc-800/40 to-zinc-900/90 flex items-center justify-between">
         <h3 className="text-sm font-semibold flex items-center gap-2.5 text-zinc-300">
           <span className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400 ring-1 ring-indigo-500/20 flex items-center justify-center">
@@ -38,7 +34,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
         )}
       </div>
 
-      {/* Songs List */}
       <div className="divide-y divide-zinc-800/50 max-h-[420px] overflow-y-auto minimal-scrollbar">
         {hasHistory ? (
           historySongs.map((songData, index) => {
@@ -47,7 +42,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
             const isSkipped = song.toLowerCase().includes('skipped');
             const isSelected = selectedSong === song;
 
-            // Strip "skipped"/"(skipped)" etc. from the title for search queries and clean title
             const searchQuery = isSkipped
               ? song.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
               : song;
@@ -71,20 +65,17 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                   }`}
                   aria-expanded={isSelected}
                 >
-                  {/* Left accent bar on hover or when expanded */}
                   <div 
                     className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-r transition-all duration-300 ${
                       isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     }`} 
                   />
 
-                  {/* Left Content: Index, Album Cover Thumbnail, Title, Badges */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <span className="text-[10px] font-mono font-medium text-zinc-500 group-hover:text-indigo-400 transition-colors w-4 text-right flex-shrink-0">
                       #{index + 1}
                     </span>
 
-                    {/* Album Cover Thumbnail */}
                     <HistoryAlbumArt songTitle={searchQuery} size="sm" />
 
                     <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -118,7 +109,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                     </div>
                   </div>
 
-                  {/* Chevron Icon */}
                   <div className={`p-1 rounded-md transition-all duration-300 flex-shrink-0 ${
                     isSelected ? 'bg-indigo-500/20 text-indigo-300 rotate-180' : 'text-zinc-500 group-hover:text-indigo-400 group-hover:bg-zinc-800/60'
                   }`}>
@@ -126,7 +116,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                   </div>
                 </button>
 
-                {/* Inline Dropdown Accordion */}
                 <div 
                   className={`grid transition-all duration-300 ease-in-out ${
                     isSelected ? 'grid-rows-[1fr] opacity-100 border-t border-indigo-500/20' : 'grid-rows-[0fr] opacity-0 border-t border-transparent'
@@ -134,7 +123,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                 >
                   <div className="overflow-hidden">
                     <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down flex flex-col sm:flex-row gap-4 items-center sm:items-start">
-                      {/* Medium Album Art Preview in Dropdown */}
                       <HistoryAlbumArt songTitle={searchQuery} size="lg" />
 
                       <div className="flex-1 w-full">
