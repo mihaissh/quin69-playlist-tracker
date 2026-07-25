@@ -44,7 +44,7 @@ export function NowPlaying({
   return (
     <Reveal>
       <div 
-        className={`rounded-xl p-[2.5px] dynamic-border-wave transition-all duration-700 ease-in-out ${
+        className={`rounded-xl dynamic-ambient-border backdrop-blur-xl overflow-hidden relative shadow-2xl transition-all duration-500 ${
           isWaveFading ? 'opacity-30 filter blur-[1px]' : 'opacity-100 filter blur-none'
         }`}
         style={{
@@ -53,7 +53,7 @@ export function NowPlaying({
           '--album-c3': c3,
         } as React.CSSProperties}
       >
-        <div className="bg-zinc-900 rounded-[9.5px] overflow-hidden relative">
+        <div className="bg-zinc-900/90 rounded-[10px] overflow-hidden relative">
           <div 
             className={`absolute inset-0 dynamic-bg-wave pointer-events-none z-0 transition-opacity duration-700 ease-in-out ${
               isWaveFading ? 'opacity-0' : 'opacity-[0.09]'

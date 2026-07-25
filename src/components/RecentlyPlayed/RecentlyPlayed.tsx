@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon } from './icons';
-import { CopyButton } from './shared';
-import { ClockIcon, ChevronDownIcon } from './shared/icons';
+import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon, ClockIcon, ChevronDownIcon, CopyButton } from '@/components/shared';
+import { HistoryAlbumArt } from './HistoryAlbumArt';
 import { formatTimestamp } from '@/utils/timestamp';
 import type { RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
@@ -13,14 +12,12 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
   const hasHistory = historySongs.length > 0;
 
   return (
-    <div
+    <div 
       className="bg-zinc-900/60 backdrop-blur-xl rounded-xl border border-zinc-800/80 overflow-hidden relative shadow-2xl transition-all duration-500 hover:border-zinc-700/60"
       style={{ boxShadow: '0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05)' }}
     >
-      {/* Top indigo light accent */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
 
-      {/* Card Header */}
       <div className="px-5 py-3.5 border-b border-zinc-800/80 bg-gradient-to-r from-zinc-900/90 via-zinc-800/40 to-zinc-900/90 flex items-center justify-between">
         <h3 className="text-sm font-semibold flex items-center gap-2.5 text-zinc-300">
           <span className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400 ring-1 ring-indigo-500/20 flex items-center justify-center">
@@ -37,8 +34,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
         )}
       </div>
 
-      {/* Songs List */}
-      <div className="divide-y divide-zinc-800/50 max-h-[380px] overflow-y-auto minimal-scrollbar">
+      <div className="divide-y divide-zinc-800/50 max-h-[420px] overflow-y-auto minimal-scrollbar">
         {hasHistory ? (
           historySongs.map((songData, index) => {
             const song = songData.title;
@@ -46,7 +42,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
             const isSkipped = song.toLowerCase().includes('skipped');
             const isSelected = selectedSong === song;
 
-            // Strip "skipped"/"(skipped)" etc. from the title for search queries and clean title
             const searchQuery = isSkipped
               ? song.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
               : song;
@@ -56,39 +51,42 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
               : song;
 
             return (
-              <div
-                key={`${song}-${index}`}
+              <div 
+                key={`${song}-${index}`} 
                 className={`transition-colors duration-300 ${isSelected ? 'bg-indigo-950/20' : ''}`}
                 style={{ animationDelay: `${index * 35}ms` }}
               >
                 <button
                   onClick={() => setSelectedSong(isSelected ? null : song)}
-                  className={`group relative w-full text-left px-5 py-3.5 transition-all duration-300 flex items-center justify-between gap-3 ${isSelected
-                      ? 'bg-gradient-to-r from-indigo-900/20 via-zinc-800/40 to-transparent'
+                  className={`group relative w-full text-left px-5 py-3 transition-all duration-300 flex items-center justify-between gap-3 ${
+                    isSelected 
+                      ? 'bg-gradient-to-r from-indigo-900/20 via-zinc-800/40 to-transparent' 
                       : 'hover:bg-gradient-to-r hover:from-indigo-950/20 hover:via-zinc-800/40 hover:to-transparent'
-                    }`}
+                  }`}
                   aria-expanded={isSelected}
                 >
-                  {/* Left accent bar on hover or when expanded */}
-                  <div
-                    className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-r transition-all duration-300 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}
+                  <div 
+                    className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-r transition-all duration-300 ${
+                      isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    }`} 
                   />
 
-                  {/* Left Content: Index, Title, Badges */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <span className="text-[10px] font-mono font-medium text-zinc-500 group-hover:text-indigo-400 transition-colors w-4 text-right flex-shrink-0">
                       #{index + 1}
                     </span>
 
+                    <HistoryAlbumArt songTitle={searchQuery} size="sm" />
+
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span
-                        className={`text-sm font-medium transition-all flex-1 truncate ${isSkipped
+                      <span 
+                        className={`text-sm font-medium transition-all flex-1 truncate ${
+                          isSkipped
                             ? 'text-zinc-500 italic group-hover:text-zinc-300'
                             : isSelected
                               ? 'text-indigo-300 font-semibold'
                               : 'text-zinc-200 group-hover:text-indigo-300'
-                          }`}
+                        }`}
                       >
                         {cleanTitle}
                       </span>
@@ -101,7 +99,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                     </div>
 
                     {timestamp && (
-                      <span className="text-[11px] font-mono text-zinc-500 group-hover:text-zinc-400 bg-zinc-800/40 group-hover:bg-zinc-800/80 px-2 py-0.5 rounded transition-all flex-shrink-0">
+                      <span className="text-[11px] font-mono text-zinc-500 group-hover:text-zinc-400 bg-zinc-800/40 group-hover:bg-zinc-800/80 px-2 py-0.5 rounded transition-all flex-shrink-0 hidden sm:inline-block">
                         {timestamp}
                       </span>
                     )}
@@ -111,50 +109,54 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                     </div>
                   </div>
 
-                  {/* Chevron Icon */}
-                  <div className={`p-1 rounded-md transition-all duration-300 flex-shrink-0 ${isSelected ? 'bg-indigo-500/20 text-indigo-300 rotate-180' : 'text-zinc-500 group-hover:text-indigo-400 group-hover:bg-zinc-800/60'
-                    }`}>
+                  <div className={`p-1 rounded-md transition-all duration-300 flex-shrink-0 ${
+                    isSelected ? 'bg-indigo-500/20 text-indigo-300 rotate-180' : 'text-zinc-500 group-hover:text-indigo-400 group-hover:bg-zinc-800/60'
+                  }`}>
                     <ChevronDownIcon className="w-4 h-4 transition-transform duration-300" />
                   </div>
                 </button>
 
-                {/* Inline Dropdown Accordion */}
-                <div
-                  className={`grid transition-all duration-300 ease-in-out ${isSelected ? 'grid-rows-[1fr] opacity-100 border-t border-indigo-500/20' : 'grid-rows-[0fr] opacity-0 border-t border-transparent'
-                    }`}
+                <div 
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    isSelected ? 'grid-rows-[1fr] opacity-100 border-t border-indigo-500/20' : 'grid-rows-[0fr] opacity-0 border-t border-transparent'
+                  }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down">
-                      <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2.5">
-                        Listen or Search Track
-                      </p>
+                    <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+                      <HistoryAlbumArt songTitle={searchQuery} size="lg" />
 
-                      <div className="flex flex-col sm:flex-row gap-2.5">
-                        <a
-                          href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-spotify rounded-lg text-emerald-400 hover:text-emerald-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          <SpotifyIcon className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
-                            Search Spotify
-                          </span>
-                          <ExternalLinkIcon className="w-3.5 h-3.5 text-emerald-400/70 group-hover:text-emerald-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-                        </a>
+                      <div className="flex-1 w-full">
+                        <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2.5">
+                          Listen or Search Track
+                        </p>
 
-                        <a
-                          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-youtube rounded-lg text-red-400 hover:text-red-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          <YouTubeIcon className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-xs font-semibold text-red-400 group-hover:text-red-300">
-                            Search YouTube
-                          </span>
-                          <ExternalLinkIcon className="w-3.5 h-3.5 text-red-400/70 group-hover:text-red-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-                        </a>
+                        <div className="flex flex-col sm:flex-row gap-2.5">
+                          <a
+                            href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-spotify rounded-lg text-emerald-400 hover:text-emerald-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                          >
+                            <SpotifyIcon className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
+                            <span className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
+                              Search Spotify
+                            </span>
+                            <ExternalLinkIcon className="w-3.5 h-3.5 text-emerald-400/70 group-hover:text-emerald-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                          </a>
+
+                          <a
+                            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-youtube rounded-lg text-red-400 hover:text-red-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                          >
+                            <YouTubeIcon className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-300" />
+                            <span className="text-xs font-semibold text-red-400 group-hover:text-red-300">
+                              Search YouTube
+                            </span>
+                            <ExternalLinkIcon className="w-3.5 h-3.5 text-red-400/70 group-hover:text-red-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
