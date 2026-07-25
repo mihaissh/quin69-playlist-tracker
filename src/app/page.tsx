@@ -26,10 +26,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-900 text-white flex flex-col overflow-hidden relative">
-      <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex-grow flex flex-col relative z-10 justify-between">
+      <div className="w-full max-w-3xl mx-auto px-6 py-8 flex-grow flex flex-col relative z-10">
         <Header isOffline={!isStreamLive} hasError={error} streamTitle={streamTitle} />
 
-        <div className="space-y-3 sm:space-y-3.5 flex-grow flex flex-col justify-center">
+        <div className="space-y-6 flex-grow">
           <NowPlaying
             isLoading={loading && !initialLoadComplete}
             isOffline={playlist.isOffline}

@@ -53,7 +53,7 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative h-44 w-44 sm:h-48 sm:w-48 flex-shrink-0 cursor-pointer select-none"
+        className="relative h-52 w-52 flex-shrink-0 cursor-pointer select-none"
         style={{
           perspective: '1000px',
           transform: isHovered ? tiltStyle : 'rotateX(0deg) rotateY(0deg)',
@@ -66,7 +66,7 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
 
         {/* Inner 3D Flip Card */}
         <div 
-          className="relative h-44 w-44 sm:h-48 sm:w-48 rounded-xl shadow-2xl"
+          className="relative h-52 w-52 rounded-xl shadow-2xl"
           style={{
             transformStyle: 'preserve-3d',
             transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
