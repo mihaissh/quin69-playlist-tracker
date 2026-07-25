@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { parseSongInfo } from '@/utils/songParser';
 import { API_ENDPOINTS, ITUNES_IMAGE_SIZES } from '@/constants';
-import { logger } from '@/utils/logger';
 
 interface UseAlbumArtReturn {
   albumArt: string | null;
@@ -34,8 +33,8 @@ async function fetchAlbumArtFromItunes(artist: string, track: string): Promise<s
     }
 
     return null;
-  } catch (error) {
-    logger.error('Error fetching from iTunes API:', error);
+  } catch {
+    // Silently return null on network or CORS restrictions to fall back to default icon
     return null;
   }
 }
@@ -72,11 +71,7 @@ export function useAlbumArt(): UseAlbumArtReturn {
       if (signal.aborted) return;
 
       setAlbumArt(artworkUrl);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        return;
-      }
-      logger.error('Error fetching album art:', error);
+    } catch {
       setAlbumArt(null);
     }
   }, []);
