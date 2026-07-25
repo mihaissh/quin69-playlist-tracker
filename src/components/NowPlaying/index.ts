@@ -4,6 +4,9 @@
 
 export { NowPlaying } from './NowPlaying';
 export { AlbumArtwork } from './AlbumArtwork';
+export { AlbumArtworkAmbientGlow } from './AlbumArtworkAmbientGlow';
+export { AlbumArtworkFront } from './AlbumArtworkFront';
+export { AlbumArtworkBack } from './AlbumArtworkBack';
 export { InfoField } from './InfoField';
 export { OfflineState } from './OfflineState';
 export { PlayingState } from './PlayingState';
