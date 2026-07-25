@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon, ClockIcon, ChevronDownIcon, CopyButton } from '@/components/shared';
-import { HistoryAlbumArt } from './HistoryAlbumArt';
 import { formatTimestamp } from '@/utils/timestamp';
 import type { RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
@@ -76,8 +75,6 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                       #{index + 1}
                     </span>
 
-                    <HistoryAlbumArt songTitle={searchQuery} size="sm" />
-
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span 
                         className={`text-sm font-medium transition-all flex-1 truncate ${
@@ -122,41 +119,37 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down flex flex-col sm:flex-row gap-4 items-center sm:items-start">
-                      <HistoryAlbumArt songTitle={searchQuery} size="lg" />
+                    <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down">
+                      <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2.5">
+                        Listen or Search Track
+                      </p>
 
-                      <div className="flex-1 w-full">
-                        <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2.5">
-                          Listen or Search Track
-                        </p>
+                      <div className="flex flex-col sm:flex-row gap-2.5">
+                        <a
+                          href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-spotify rounded-lg text-emerald-400 hover:text-emerald-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <SpotifyIcon className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
+                          <span className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
+                            Search Spotify
+                          </span>
+                          <ExternalLinkIcon className="w-3.5 h-3.5 text-emerald-400/70 group-hover:text-emerald-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                        </a>
 
-                        <div className="flex flex-col sm:flex-row gap-2.5">
-                          <a
-                            href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-spotify rounded-lg text-emerald-400 hover:text-emerald-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                          >
-                            <SpotifyIcon className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
-                            <span className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
-                              Search Spotify
-                            </span>
-                            <ExternalLinkIcon className="w-3.5 h-3.5 text-emerald-400/70 group-hover:text-emerald-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-                          </a>
-
-                          <a
-                            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-youtube rounded-lg text-red-400 hover:text-red-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                          >
-                            <YouTubeIcon className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-300" />
-                            <span className="text-xs font-semibold text-red-400 group-hover:text-red-300">
-                              Search YouTube
-                            </span>
-                            <ExternalLinkIcon className="w-3.5 h-3.5 text-red-400/70 group-hover:text-red-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-                          </a>
-                        </div>
+                        <a
+                          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-youtube rounded-lg text-red-400 hover:text-red-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <YouTubeIcon className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-300" />
+                          <span className="text-xs font-semibold text-red-400 group-hover:text-red-300">
+                            Search YouTube
+                          </span>
+                          <ExternalLinkIcon className="w-3.5 h-3.5 text-red-400/70 group-hover:text-red-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                        </a>
                       </div>
                     </div>
                   </div>
