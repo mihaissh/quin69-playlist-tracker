@@ -232,10 +232,16 @@
   }
 
   /* Enhanced glassmorphism card */
-  .glass-card {
-    background: rgba(39, 39, 42, 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  /* Soft subtle ambient border wave using album art colors */
+  .dynamic-ambient-border {
+    padding: 1.5px;
+    background: linear-gradient(135deg, 
+      var(--album-c1, rgba(99, 102, 241, 0.35)) 0%, 
+      var(--album-c2, rgba(168, 85, 247, 0.2)) 50%, 
+      var(--album-c3, rgba(99, 102, 241, 0.35)) 100%);
+    box-shadow: 0 0 12px -3px var(--album-c1, rgba(99, 102, 241, 0.2)),
+                0 0 20px -6px var(--album-c2, rgba(168, 85, 247, 0.12));
+    transition: background 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
   }
 
 
