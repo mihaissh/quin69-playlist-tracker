@@ -18,19 +18,3 @@ export function parseSongInfo(songString: string): ParsedSongInfo {
     title: songString.trim()
   };
 }
-
-/**
- * Clean a song string for API searching (iTunes/Spotify)
- * Strips parentheses, brackets, special symbols, and remix clutter that trigger WAF 403 or search failures
- */
-export function cleanSearchTerm(songString: string): string {
-  if (!songString) return '';
-  return songString
-    .replace(/[\(\[\{].*?[\)\]\}]/g, '')
-    .replace(/\s*-\s*remix/gi, ' ')
-    .replace(/\s*-\s*edit/gi, ' ')
-    .replace(/\s*-\s*mix/gi, ' ')
-    .replace(/[^a-zA-Z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
