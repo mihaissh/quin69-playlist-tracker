@@ -44,16 +44,17 @@ export function NowPlaying({
   return (
     <Reveal>
       <div 
-        className={`rounded-xl p-[2.5px] dynamic-border-wave transition-all duration-700 ease-in-out ${
+        className={`rounded-xl bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/80 overflow-hidden relative shadow-2xl transition-all duration-500 hover:border-zinc-700/60 ${
           isWaveFading ? 'opacity-30 filter blur-[1px]' : 'opacity-100 filter blur-none'
         }`}
         style={{
-          '--album-c1': c1,
-          '--album-c2': c2,
-          '--album-c3': c3,
-        } as React.CSSProperties}
+          boxShadow: '0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05)',
+        }}
       >
-        <div className="bg-zinc-900 rounded-[9.5px] overflow-hidden relative">
+        {/* Top indigo light accent */}
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent z-30" />
+
+        <div className="bg-zinc-900/80 rounded-xl overflow-hidden relative">
           <div 
             className={`absolute inset-0 dynamic-bg-wave pointer-events-none z-0 transition-opacity duration-700 ease-in-out ${
               isWaveFading ? 'opacity-0' : 'opacity-[0.09]'
