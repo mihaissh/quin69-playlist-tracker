@@ -1,13 +1,19 @@
 import { ITUNES_IMAGE_SIZES } from '@/constants';
+import { cleanSearchTerm } from './songParser';
 
 let callbackCounter = 0;
 
 /**
- * Fetch iTunes album artwork using JSONP to eliminate 403 Forbidden & CORS errors.
- * Works seamlessly across development and static production deployments.
+ * Fetch iTunes album artwork using JSONP with sanitized query parameters
+ * Avoids WAF 403 blocks and CORS errors by using %20 encoding and cleaned search strings.
  */
 export function fetchItunesJsonp(searchTerm: string, timeoutMs: number = 5000): Promise<string | null> {
   if (typeof window === 'undefined' || !searchTerm) {
+    return Promise.resolve(null);
+  }
+
+  const sanitizedTerm = cleanSearchTerm(searchTerm);
+  if (!sanitizedTerm) {
     return Promise.resolve(null);
   }
 
@@ -43,13 +49,8 @@ export function fetchItunesJsonp(searchTerm: string, timeoutMs: number = 5000): 
       resolve(null);
     };
 
-    const url = `https://itunes.apple.com/search?${new URLSearchParams({
-      term: searchTerm,
-      media: 'music',
-      entity: 'song',
-      limit: '1',
-      callback: callbackName,
-    })}`;
+    const encodedTerm = encodeURIComponent(sanitizedTerm);
+    const url = `https://itunes.apple.com/search?term=${encodedTerm}&media=music&entity=song&limit=1&callback=${callbackName}`;
 
     script.src = url;
     script.async = true;
