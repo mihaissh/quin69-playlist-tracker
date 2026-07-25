@@ -10,7 +10,7 @@ export function Header({ isOffline, hasError, streamTitle }: HeaderProps) {
   const subtitle = streamTitle || 'Song Requests';
 
   return (
-    <header className="mb-3 sm:mb-4 relative">
+    <header className="mb-1.5 sm:mb-2 relative">
       <Reveal>
         <div className="flex items-center justify-between gap-4">
           {/* Profile */}

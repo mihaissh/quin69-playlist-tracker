@@ -29,7 +29,7 @@ export default function Home() {
       <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex-grow flex flex-col relative z-10 justify-between">
         <Header isOffline={!isStreamLive} hasError={error} streamTitle={streamTitle} />
 
-        <div className="space-y-4 flex-grow flex flex-col justify-center">
+        <div className="space-y-3 sm:space-y-3.5 flex-grow flex flex-col justify-center">
           <NowPlaying
             isLoading={loading && !initialLoadComplete}
             isOffline={playlist.isOffline}
