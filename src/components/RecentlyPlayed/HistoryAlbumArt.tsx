@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { MusicIcon } from '@/components/shared';
 import { parseSongInfo } from '@/utils/songParser';
-import { API_ENDPOINTS, ITUNES_IMAGE_SIZES } from '@/constants';
+import { fetchItunesJsonp } from '@/utils/itunesJsonp';
 
 const MAX_CACHE_SIZE = 100;
 const artworkCache = new Map<string, string | null>();
@@ -17,7 +17,7 @@ function setCachedArtwork(key: string, value: string | null) {
   artworkCache.set(key, value);
 }
 
-async function fetchItunesArt(songTitle: string, signal?: AbortSignal): Promise<string | null> {
+async function fetchItunesArt(songTitle: string): Promise<string | null> {
   if (!songTitle) return null;
   const cleanKey = songTitle.toLowerCase().trim();
   
@@ -25,47 +25,17 @@ async function fetchItunesArt(songTitle: string, signal?: AbortSignal): Promise<
     return artworkCache.get(cleanKey) || null;
   }
 
-  try {
-    const parsed = parseSongInfo(songTitle);
-    const searchTerm = parsed.artist ? `${parsed.artist} ${parsed.title}` : parsed.title || songTitle;
-    
-    if (!searchTerm) {
-      setCachedArtwork(cleanKey, null);
-      return null;
-    }
-
-    const url = `${API_ENDPOINTS.ITUNES_SEARCH}?${new URLSearchParams({
-      term: searchTerm,
-      media: 'music',
-      entity: 'song',
-      limit: '1',
-    })}`;
-
-    const response = await fetch(url, { signal });
-    if (!response.ok) {
-      setCachedArtwork(cleanKey, null);
-      return null;
-    }
-
-    const data = await response.json();
-    if (data.results && data.results.length > 0) {
-      const rawUrl = data.results[0].artworkUrl100;
-      if (rawUrl) {
-        const highQualityUrl = rawUrl.replace(ITUNES_IMAGE_SIZES.DEFAULT, '300x300bb.jpg');
-        setCachedArtwork(cleanKey, highQualityUrl);
-        return highQualityUrl;
-      }
-    }
-
-    setCachedArtwork(cleanKey, null);
-    return null;
-  } catch (err) {
-    if (err instanceof Error && err.name === 'AbortError') {
-      return null;
-    }
+  const parsed = parseSongInfo(songTitle);
+  const searchTerm = parsed.artist ? `${parsed.artist} ${parsed.title}` : parsed.title || songTitle;
+  
+  if (!searchTerm) {
     setCachedArtwork(cleanKey, null);
     return null;
   }
+
+  const artworkUrl = await fetchItunesJsonp(searchTerm);
+  setCachedArtwork(cleanKey, artworkUrl);
+  return artworkUrl;
 }
 
 interface HistoryAlbumArtProps {
@@ -79,10 +49,9 @@ export function HistoryAlbumArt({ songTitle, size = 'sm' }: HistoryAlbumArtProps
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController();
     setLoading(true);
 
-    fetchItunesArt(songTitle, controller.signal).then((url) => {
+    fetchItunesArt(songTitle).then((url) => {
       if (isMounted) {
         setArtUrl(url);
         setLoading(false);
@@ -91,7 +60,6 @@ export function HistoryAlbumArt({ songTitle, size = 'sm' }: HistoryAlbumArtProps
 
     return () => {
       isMounted = false;
-      controller.abort();
     };
   }, [songTitle]);
 
