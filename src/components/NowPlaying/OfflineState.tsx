@@ -24,7 +24,7 @@ export function OfflineState() {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       <div className="flex-shrink-0 mx-auto sm:mx-0">
-        <div className="relative h-52 w-52 overflow-hidden rounded-lg shadow-lg">
+        <div className="relative h-44 w-44 sm:h-48 sm:w-48 overflow-hidden rounded-lg shadow-lg">
           <Image
             src={getAssetPath(ASSETS.BEDGE_EMOTE)}
             alt="Bedge"

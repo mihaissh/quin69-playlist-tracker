@@ -7,7 +7,7 @@
 export function Footer() {
 
   return (
-    <footer className="mt-6 pt-6 text-center space-y-2 animate-fade-in delay-300 relative">
+    <footer className="mt-3 pt-3 text-center space-y-1 animate-fade-in delay-300 relative">
       <p className="text-xs text-zinc-600">
         Updates every 15s
       </p>

@@ -39,7 +39,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
       </div>
 
       {/* Songs List */}
-      <div className="divide-y divide-zinc-800/50 max-h-[420px] overflow-y-auto minimal-scrollbar">
+      <div className="divide-y divide-zinc-800/50 max-h-[250px] sm:max-h-[280px] overflow-y-auto minimal-scrollbar">
         {hasHistory ? (
           historySongs.map((songData, index) => {
             const song = songData.title;
