@@ -19,7 +19,7 @@ export function Footer() {
           href="https://twitch.tv/quin69"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-purple-400 hover:text-purple-300 transition-colors"
+          className="text-indigo-400 hover:text-indigo-300 transition-colors"
         >
           Quin69&apos;s
         </a>{' '}

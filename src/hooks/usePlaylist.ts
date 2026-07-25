@@ -54,6 +54,21 @@ export function usePlaylist({
       // Check if stream is live on Twitch
       const streamIsLive = await checkStreamStatus(signal);
       
+      // If stream is offline, do not check for messages
+      if (!streamIsLive) {
+        setPlaylist({
+          currentSongTitle: null,
+          historyTitles: [],
+          historySongs: [],
+          isOffline: true,
+        });
+        if (!initialLoadComplete) {
+          setInitialLoadComplete(true);
+        }
+        setLoading(false);
+        return;
+      }
+
       // Fetch WITH reverse to get newest messages first with optimized caching
       const response = await fetch(API_ENDPOINTS.PLAYLIST_LOG, {
         signal,

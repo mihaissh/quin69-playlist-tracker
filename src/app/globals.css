@@ -9,22 +9,25 @@
   }
 
   html {
-    @apply bg-zinc-900;
+    background-color: #0b0908;
     overflow-x: hidden;
   }
 
   body {
     @apply text-white min-h-screen;
+    background-color: #0b0908;
     overflow-x: hidden;
   }
 }
 
 @layer utilities {
+
   /* Custom animations */
   @keyframes fadeIn {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -33,9 +36,12 @@
 
 
   @keyframes marqueeScroll {
-    0%, 20% {
+
+    0%,
+    20% {
       transform: translateX(0%);
     }
+
     100% {
       transform: translateX(-50%);
     }
@@ -51,6 +57,7 @@
     0% {
       --border-angle: 0deg;
     }
+
     100% {
       --border-angle: 360deg;
     }
@@ -60,29 +67,31 @@
     0% {
       background-position: 0% 50%;
     }
+
     100% {
       background-position: 300% 50%;
     }
   }
 
   @keyframes letterWave {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
       transform: translateY(-3.5px);
     }
   }
 
   .rgb-wave-text {
-    background: linear-gradient(
-      90deg,
-      #ffffff 0%,
-      #06b6d4 25%,
-      #84cc16 50%,
-      #ff0055 75%,
-      #ffffff 100%
-    );
+    background: linear-gradient(90deg,
+        #ffffff 0%,
+        #06b6d4 25%,
+        #84cc16 50%,
+        #ff0055 75%,
+        #ffffff 100%);
     background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -97,6 +106,49 @@
 
   .marquee-scroll {
     animation: marqueeScroll 25s linear infinite;
+  }
+
+  @keyframes slideDownFade {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes floating3D {
+    0%, 100% {
+      transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotateX(2deg) rotateY(-1.5deg);
+    }
+  }
+
+  @keyframes shadowPulse {
+    0%, 100% {
+      transform: scale(0.9);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.75;
+    }
+  }
+
+  .animate-float-3d {
+    animation: floating3D 5s ease-in-out infinite;
+  }
+
+  .animate-shadow-pulse {
+    animation: shadowPulse 5s ease-in-out infinite;
+  }
+
+  .animate-slide-down {
+    animation: slideDownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-fade-in {
@@ -115,16 +167,16 @@
   .minimal-scrollbar::-webkit-scrollbar {
     width: 4px;
   }
-  
+
   .minimal-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .minimal-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(63, 63, 70, 0.3);
     border-radius: 2px;
   }
-  
+
   .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(63, 63, 70, 0.5);
   }
@@ -137,6 +189,7 @@
     border: 1px solid rgba(16, 185, 129, 0.25);
     backdrop-filter: blur(8px);
   }
+
   .btn-glow-spotify:hover {
     transform: translateY(-1px) !important;
     background: rgba(16, 185, 129, 0.18) !important;
@@ -151,6 +204,7 @@
     border: 1px solid rgba(239, 68, 68, 0.25);
     backdrop-filter: blur(8px);
   }
+
   .btn-glow-youtube:hover {
     transform: translateY(-1px) !important;
     background: rgba(239, 68, 68, 0.18) !important;
@@ -162,6 +216,7 @@
     position: relative;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
+
   .btn-glow-copy:hover {
     transform: translateY(-1px) !important;
     border-color: rgba(255, 255, 255, 0.3) !important;
@@ -185,18 +240,16 @@
 
   /* Dynamic animated border wave using album art colors (Luminous Light Crest Wave) */
   .dynamic-border-wave {
-    background: conic-gradient(
-      from var(--border-angle, 0deg),
-      var(--album-c1, #ffffff) 0%,
-      rgba(255, 255, 255, 0.95) 20%,
-      var(--album-c2, #06b6d4) 40%,
-      var(--album-c3, #84cc16) 65%,
-      rgba(255, 255, 255, 0.95) 85%,
-      var(--album-c1, #ffffff) 100%
-    );
+    background: conic-gradient(from var(--border-angle, 0deg),
+        var(--album-c1, #ffffff) 0%,
+        rgba(255, 255, 255, 0.95) 20%,
+        var(--album-c2, #06b6d4) 40%,
+        var(--album-c3, #84cc16) 65%,
+        rgba(255, 255, 255, 0.95) 85%,
+        var(--album-c1, #ffffff) 100%);
     animation: borderWaveRotate 3.5s linear infinite;
     box-shadow: 0 0 14px -1px var(--album-c1, rgba(255, 255, 255, 0.4)),
-                0 0 24px -4px var(--album-c2, rgba(255, 255, 255, 0.2));
+      0 0 24px -4px var(--album-c2, rgba(255, 255, 255, 0.2));
     transition: background 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
   }
 
@@ -204,6 +257,7 @@
     0% {
       background-position: 0% 100%;
     }
+
     100% {
       background-position: 300% -200%;
     }
@@ -211,13 +265,11 @@
 
   /* Subtle animated background wave inside the card */
   .dynamic-bg-wave {
-    background: linear-gradient(
-      45deg,
-      var(--album-c1, #ffffff),
-      var(--album-c2, rgba(255, 255, 255, 0.5)),
-      var(--album-c3, rgba(255, 255, 255, 0.2)),
-      var(--album-c1, #ffffff)
-    );
+    background: linear-gradient(45deg,
+        var(--album-c1, #ffffff),
+        var(--album-c2, rgba(255, 255, 255, 0.5)),
+        var(--album-c3, rgba(255, 255, 255, 0.2)),
+        var(--album-c1, #ffffff));
     background-size: 300% 300%;
     animation: diagonalWave 6s linear infinite;
     filter: blur(32px);
@@ -226,6 +278,7 @@
 
   /* Respect user's motion preferences */
   @media (prefers-reduced-motion: reduce) {
+
     .marquee-scroll,
     .rgb-wave-text,
     .rgb-wave-letter {
@@ -233,4 +286,3 @@
     }
   }
 }
-
