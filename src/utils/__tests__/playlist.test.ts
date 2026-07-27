@@ -35,6 +35,7 @@ describe('parsePlaylist', () => {
       '[2025-01-15 10:00:00] #quin69 sheepfarmer: 🔊 Valid Song',
       '[2025-01-15 09:59:00] #quin69 sheepfarmer: 🔊 vibe check',
       '[2025-01-15 09:58:00] #quin69 sheepfarmer: 🔊 offline mode',
+      '[2025-01-15 09:57:00] #quin69 sheepfarmer: 🔊 Loco In The Coco was skipped, and points deducted.',
     ];
 
     const result = parsePlaylist(linesWithExcluded, true);

@@ -48,5 +48,13 @@ describe('parseSongInfo', () => {
       title: '---',
     });
   });
+
+  it('should strip Twitch requested by metadata', () => {
+    const result = parseSongInfo('AIROD - Adrenaline | Requested by hvyweightt');
+    expect(result).toEqual({
+      artist: 'AIROD',
+      title: 'Adrenaline',
+    });
+  });
 });
 

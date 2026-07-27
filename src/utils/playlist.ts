@@ -27,7 +27,9 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
       line.includes(PLAYLIST_FILTERS.SPEAKER_EMOJI) && 
       !line.toUpperCase().includes(PLAYLIST_FILTERS.EXCLUDE_VIBE) && 
       !line.toLowerCase().includes(PLAYLIST_FILTERS.EXCLUDE_OFFLINE) &&
-      !line.includes(PLAYLIST_FILTERS.EXCLUDE_CLEARING)
+      !line.includes(PLAYLIST_FILTERS.EXCLUDE_CLEARING) &&
+      !line.includes(PLAYLIST_FILTERS.EXCLUDE_SKIPPED) &&
+      !line.includes(PLAYLIST_FILTERS.EXCLUDE_POINTS)
     )
     .map(line => {
       // Extract timestamp from [YYYY-MM-DD HH:MM:SS] format

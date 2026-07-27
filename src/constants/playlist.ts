@@ -7,6 +7,8 @@ export const PLAYLIST_FILTERS = {
   EXCLUDE_VIBE: 'VIBE',
   EXCLUDE_OFFLINE: 'offline',
   EXCLUDE_CLEARING: 'Clearing the spotify',
+  EXCLUDE_SKIPPED: 'was skipped',
+  EXCLUDE_POINTS: 'points deducted',
 } as const;
 
 export const STREAM_STATUS_INDICATORS = {
