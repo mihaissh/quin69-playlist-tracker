@@ -19,8 +19,12 @@ export function PlayingState({ currentSong, albumArt }: PlayingStateProps) {
   const songInfo: SongInfo = {
     artist: parsed.artist,
     title: parsed.title,
+    requestedBy: parsed.requestedBy,
   };
   const textSizeClass = getTextSizeClass(songInfo.artist, songInfo.title);
+  const cleanQuery = songInfo.artist !== 'Unknown Artist'
+    ? `${songInfo.artist} - ${songInfo.title}`
+    : songInfo.title;
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
@@ -34,18 +38,34 @@ export function PlayingState({ currentSong, albumArt }: PlayingStateProps) {
             <InfoField
               label="Artist"
               value={songInfo.artist}
+              labelColor="text-indigo-400 font-bold"
+              valueColor="text-zinc-100"
               textSize={textSizeClass}
             />
             <InfoField
               label="Song"
               value={songInfo.title}
+              labelColor="text-purple-400 font-bold"
+              valueColor="text-white"
               textSize={textSizeClass}
             />
+            {songInfo.requestedBy && (
+              <div className="pt-1">
+                <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                  Requested By
+                </span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-950/80 border border-indigo-500/50 text-indigo-200 shadow-md">
+                  <span className="text-sm sm:text-base font-extrabold text-indigo-300">
+                    @{songInfo.requestedBy}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="mt-auto flex items-center justify-center sm:justify-start gap-2">
-            <SearchLinks songQuery={currentSong} />
-            <CopyButton songText={currentSong} />
+            <SearchLinks songQuery={cleanQuery} />
+            <CopyButton songText={cleanQuery} />
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ interface AlbumArtworkBackProps {
  */
 export function AlbumArtworkBack({ src }: AlbumArtworkBackProps) {
   return (
-    <div 
+    <div
       className="absolute inset-0 rounded-xl overflow-hidden ring-1 ring-white/20 bg-zinc-950 flex items-center justify-center shadow-inner"
       style={{
         backfaceVisibility: 'hidden',
@@ -21,8 +21,8 @@ export function AlbumArtworkBack({ src }: AlbumArtworkBackProps) {
       }}
     >
       {/* Vinyl Grooves & Vinyl Record Look */}
-      <div 
-        className="w-48 h-48 rounded-full bg-zinc-900 border-4 border-zinc-800/80 flex items-center justify-center relative shadow-inner animate-spin" 
+      <div
+        className="w-48 h-48 rounded-full bg-zinc-900 border-4 border-zinc-800/80 flex items-center justify-center relative shadow-inner animate-spin"
         style={{ animationDuration: '16s' }}
       >
         <div className="w-36 h-36 rounded-full border border-zinc-800 flex items-center justify-center">
@@ -31,14 +31,14 @@ export function AlbumArtworkBack({ src }: AlbumArtworkBackProps) {
             <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center relative shadow-md">
               {src ? (
                 <div className="w-12 h-12 rounded-full overflow-hidden relative">
-                  <Image 
-                    src={src} 
-                    alt="" 
-                    fill 
-                    sizes="48px" 
-                    className="object-cover" 
-                    priority 
-                    unoptimized 
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                    priority
+                    unoptimized
                   />
                 </div>
               ) : (

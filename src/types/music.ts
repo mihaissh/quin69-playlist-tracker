@@ -1,6 +1,7 @@
 export interface SongInfo {
   artist: string;
   title: string;
+  requestedBy?: string;
 }
 
 export interface OfflineMessage {
@@ -24,6 +25,7 @@ export interface InfoFieldProps {
   label: string;
   value: string;
   labelColor?: string;
+  valueColor?: string;
   textSize?: string;
 }
 

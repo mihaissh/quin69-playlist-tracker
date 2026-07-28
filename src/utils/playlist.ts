@@ -4,6 +4,7 @@
 
 import type { PlaylistData, SongWithTimestamp } from '@/types/playlist';
 import { MAX_HISTORY_SONGS, PLAYLIST_FILTERS, SPEAKER_EMOJI_LENGTH } from '@/constants';
+import { parseSongInfo } from '@/utils/songParser';
 
 /**
  * Parse chat log lines into playlist data
@@ -39,8 +40,13 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
       // Extract song title after 🔊
       const emojiIndex = line.indexOf(PLAYLIST_FILTERS.SPEAKER_EMOJI);
       const songTitle = line.substring(emojiIndex + SPEAKER_EMOJI_LENGTH).trim();
+      const parsedInfo = parseSongInfo(songTitle);
       
-      return { title: songTitle, timestamp };
+      return { 
+        title: songTitle, 
+        timestamp,
+        ...(parsedInfo.requestedBy ? { requestedBy: parsedInfo.requestedBy } : {})
+      };
     });
 
   if (allSongsWithTimestamps.length === 0) {

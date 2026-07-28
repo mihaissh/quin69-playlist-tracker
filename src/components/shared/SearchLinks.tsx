@@ -13,21 +13,22 @@ export function SearchLinks({ songQuery }: SearchLinksProps) {
         href={`https://open.spotify.com/search/${encodeURIComponent(songQuery)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 btn-glow-spotify rounded-md text-xs font-medium text-white shadow-lg"
+        className="inline-flex items-center gap-2 px-3.5 py-2 btn-clean-spotify rounded-xl text-xs font-semibold text-zinc-300 transition-colors"
         aria-label={`Search "${songQuery}" on Spotify`}
       >
-        <SpotifyIcon className="w-4 h-4" />
-        Spotify
+        <SpotifyIcon className="w-4 h-4 text-emerald-400" />
+        <span>Spotify</span>
       </a>
+
       <a
         href={`https://www.youtube.com/results?search_query=${encodeURIComponent(songQuery)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex items-center justify-center gap-1.5 px-3 py-2 btn-glow-youtube rounded-md text-xs font-medium text-white shadow-lg"
+        className="inline-flex items-center gap-2 px-3.5 py-2 btn-clean-youtube rounded-xl text-xs font-semibold text-zinc-300 transition-colors"
         aria-label={`Search "${songQuery}" on YouTube`}
       >
-        <YouTubeIcon className="w-4 h-4" />
-        YouTube
+        <YouTubeIcon className="w-4 h-4 text-rose-400" />
+        <span>YouTube</span>
       </a>
     </div>
   );

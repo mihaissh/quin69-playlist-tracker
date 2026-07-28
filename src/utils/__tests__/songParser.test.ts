@@ -49,11 +49,28 @@ describe('parseSongInfo', () => {
     });
   });
 
-  it('should strip Twitch requested by metadata', () => {
+  it('should extract Twitch requested by metadata', () => {
     const result = parseSongInfo('AIROD - Adrenaline | Requested by hvyweightt');
     expect(result).toEqual({
       artist: 'AIROD',
       title: 'Adrenaline',
+      requestedBy: 'hvyweightt',
+    });
+  });
+
+  it('should handle different formats of requested by metadata', () => {
+    const result1 = parseSongInfo('Artist - Song requested by user_one');
+    expect(result1).toEqual({
+      artist: 'Artist',
+      title: 'Song',
+      requestedBy: 'user_one',
+    });
+
+    const result2 = parseSongInfo('Artist - Song | requested by @user_two');
+    expect(result2).toEqual({
+      artist: 'Artist',
+      title: 'Song',
+      requestedBy: 'user_two',
     });
   });
 });

@@ -17,7 +17,7 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
+
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
@@ -42,7 +42,7 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
 
   return (
     <div className="relative group flex flex-col items-center flex-shrink-0">
-      <div 
+      <div
         ref={cardRef}
         onClick={handleFlip}
         onMouseMove={handleMouseMove}
@@ -58,7 +58,7 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
       >
         <AlbumArtworkAmbientGlow src={src} />
 
-        <div 
+        <div
           className="relative h-52 w-52 rounded-xl shadow-2xl"
           style={{
             transformStyle: 'preserve-3d',
