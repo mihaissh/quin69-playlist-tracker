@@ -81,5 +81,15 @@ describe('parsePlaylist', () => {
     expect(result.currentSongTitle).toBe('Song Without Timestamp');
     expect(result.historySongs[0].timestamp).toBe('');
   });
+
+  it('should parse requestedBy field when available in chat logs', () => {
+    const linesWithRequests = [
+      '[2025-01-15 10:00:00] #quin69 sheepfarmer: 🔊 Current Song | Requested by alice',
+      '[2025-01-15 09:59:00] #quin69 sheepfarmer: 🔊 History Song | Requested by bob',
+    ];
+
+    const result = parsePlaylist(linesWithRequests, true);
+    expect(result.historySongs[0].requestedBy).toBe('bob');
+  });
 });
 

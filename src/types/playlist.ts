@@ -5,6 +5,7 @@
 export interface SongWithTimestamp {
   title: string;
   timestamp: string; // ISO format: "YYYY-MM-DD HH:MM:SS"
+  requestedBy?: string;
 }
 
 export interface RecentlyPlayedProps {

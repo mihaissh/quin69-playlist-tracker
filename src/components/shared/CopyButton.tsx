@@ -39,25 +39,20 @@ export function CopyButton({ songText, variant = 'button', className = '' }: Cop
     }
   };
 
-  const baseClasses = `p-2 rounded-lg backdrop-blur-sm transition-all duration-300 border shadow-lg relative overflow-hidden btn-glow-copy ${
+  const baseClasses = `p-2 rounded-xl btn-clean-copy relative flex items-center justify-center transition-colors ${
     copied
-      ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/50 shadow-indigo-500/20'
-      : 'bg-zinc-800/80 hover:bg-zinc-700/90 text-zinc-300 hover:text-indigo-400 border-zinc-700/50 hover:shadow-indigo-500/20 hover:border-indigo-500/40'
+      ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/40'
+      : 'text-zinc-400 hover:text-zinc-200'
   } ${className}`;
 
   const content = (
     <>
-      <div className={`relative transition-all duration-300 ${copied ? 'scale-0 rotate-180' : 'scale-100 rotate-0'}`}>
-        <CopyIcon className="w-4 h-4" />
+      <div className={`transition-all duration-200 ${copied ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}>
+        <CopyIcon className="w-4 h-4 text-indigo-400" />
       </div>
-      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-100 rotate-0' : 'scale-0 -rotate-180'}`}>
-        <CheckIcon className="w-4 h-4" />
+      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${copied ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}>
+        <CheckIcon className="w-4 h-4 text-emerald-400" />
       </div>
-      
-      {/* Ripple effect */}
-      {copied && (
-        <div className="absolute inset-0 rounded-lg bg-indigo-500/30 animate-ping" style={{ animationDuration: '0.6s' }} />
-      )}
     </>
   );
 

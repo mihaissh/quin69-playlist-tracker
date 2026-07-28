@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SpotifyIcon, YouTubeIcon, ExternalLinkIcon, ClockIcon, ChevronDownIcon, CopyButton } from '@/components/shared';
 import { formatTimestamp } from '@/utils/timestamp';
+import { parseSongInfo, cleanSongString } from '@/utils/songParser';
 import type { RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
 
@@ -40,14 +41,15 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
             const timestamp = formatTimestamp(songData.timestamp);
             const isSkipped = song.toLowerCase().includes('skipped');
             const isSelected = selectedSong === song;
+            const parsed = parseSongInfo(song);
+            const requestedBy = songData.requestedBy || parsed.requestedBy;
 
+            const cleanTitleText = cleanSongString(song);
             const searchQuery = isSkipped
-              ? song.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
-              : song;
+              ? cleanTitleText.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
+              : cleanTitleText;
 
-            const cleanTitle = isSkipped
-              ? song.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
-              : song;
+            const cleanTitle = searchQuery;
 
             return (
               <div 
@@ -88,6 +90,13 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                         {cleanTitle}
                       </span>
 
+                      {requestedBy && (
+                        <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex-shrink-0 flex items-center gap-1">
+                          <span className="text-indigo-400/80 text-[10px]">req by</span>
+                          <span className="font-semibold text-indigo-200">@{requestedBy}</span>
+                        </span>
+                      )}
+
                       {isSkipped && (
                         <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 flex-shrink-0">
                           Skipped
@@ -106,10 +115,12 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                     </div>
                   </div>
 
-                  <div className={`p-1 rounded-md transition-all duration-300 flex-shrink-0 ${
-                    isSelected ? 'bg-indigo-500/20 text-indigo-300 rotate-180' : 'text-zinc-500 group-hover:text-indigo-400 group-hover:bg-zinc-800/60'
+                  <div className={`p-1.5 rounded-lg border transition-all duration-300 flex-shrink-0 ${
+                    isSelected 
+                      ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 rotate-180 shadow-md shadow-indigo-500/20' 
+                      : 'bg-zinc-800/40 border-zinc-700/40 text-zinc-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/30'
                   }`}>
-                    <ChevronDownIcon className="w-4 h-4 transition-transform duration-300" />
+                    <ChevronDownIcon className="w-3.5 h-3.5 transition-transform duration-300" />
                   </div>
                 </button>
 
@@ -120,7 +131,15 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                 >
                   <div className="overflow-hidden">
                     <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down">
-                      <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2.5">
+                      {requestedBy && (
+                        <div className="mb-3 px-3.5 py-2 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-between shadow-inner">
+                          <span className="text-xs font-medium text-zinc-400">Requested by</span>
+                          <span className="text-xs font-bold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/30">
+                            @{requestedBy}
+                          </span>
+                        </div>
+                      )}
+                      <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2.5">
                         Listen or Search Track
                       </p>
 
@@ -129,26 +148,22 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                           href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-spotify rounded-lg text-emerald-400 hover:text-emerald-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-clean-spotify rounded-xl text-xs font-semibold text-zinc-300 transition-colors group"
                         >
-                          <SpotifyIcon className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
-                            Search Spotify
-                          </span>
-                          <ExternalLinkIcon className="w-3.5 h-3.5 text-emerald-400/70 group-hover:text-emerald-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                          <SpotifyIcon className="w-4 h-4 text-emerald-400" />
+                          <span>Search Spotify</span>
+                          <ExternalLinkIcon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
                         </a>
 
                         <a
                           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-glow-youtube rounded-lg text-red-400 hover:text-red-300 transition-all duration-300 group shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-clean-youtube rounded-xl text-xs font-semibold text-zinc-300 transition-colors group"
                         >
-                          <YouTubeIcon className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-xs font-semibold text-red-400 group-hover:text-red-300">
-                            Search YouTube
-                          </span>
-                          <ExternalLinkIcon className="w-3.5 h-3.5 text-red-400/70 group-hover:text-red-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                          <YouTubeIcon className="w-4 h-4 text-rose-400" />
+                          <span>Search YouTube</span>
+                          <ExternalLinkIcon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
                         </a>
                       </div>
                     </div>
