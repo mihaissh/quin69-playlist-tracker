@@ -22,30 +22,30 @@ export function AlbumArtworkBack({ src }: AlbumArtworkBackProps) {
     >
       {/* Vinyl Grooves & Vinyl Record Look */}
       <div
-        className="w-48 h-48 rounded-full bg-zinc-900 border-4 border-zinc-800/80 flex items-center justify-center relative shadow-inner animate-spin"
+        className="w-[90%] h-[90%] rounded-full bg-zinc-900 border-4 border-zinc-800/80 flex items-center justify-center relative shadow-inner animate-spin"
         style={{ animationDuration: '16s' }}
       >
-        <div className="w-36 h-36 rounded-full border border-zinc-800 flex items-center justify-center">
-          <div className="w-24 h-24 rounded-full border border-zinc-700/60 flex items-center justify-center">
+        <div className="w-[75%] h-[75%] rounded-full border border-zinc-800 flex items-center justify-center">
+          <div className="w-[65%] h-[65%] rounded-full border border-zinc-700/60 flex items-center justify-center">
             {/* Center Record Label */}
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center relative shadow-md">
+            <div className="w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center relative shadow-md">
               {src ? (
-                <div className="w-12 h-12 rounded-full overflow-hidden relative">
+                <div className="w-[70%] h-[70%] rounded-full overflow-hidden relative">
                   <Image
                     src={src}
                     alt=""
                     fill
-                    sizes="48px"
+                    sizes="64px"
                     className="object-cover"
                     priority
                     unoptimized
                   />
                 </div>
               ) : (
-                <MusicIcon className="w-8 h-8 text-white" />
+                <MusicIcon className="w-1/2 h-1/2 text-white" />
               )}
               {/* Spindle hole */}
-              <div className="absolute w-2.5 h-2.5 rounded-full bg-zinc-950 ring-1 ring-white/30" />
+              <div className="absolute w-[15%] h-[15%] rounded-full bg-zinc-950 ring-1 ring-white/30" />
             </div>
           </div>
         </div>

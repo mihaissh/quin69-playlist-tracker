@@ -91,7 +91,7 @@ export function RecentlyPlayed({ historySongs }: RecentlyPlayedProps) {
                       </span>
 
                       {requestedBy && (
-                        <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex-shrink-0 flex items-center gap-1">
+                        <span className="hidden sm:inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex-shrink-0 items-center gap-1">
                           <span className="text-indigo-400/80 text-[10px]">req by</span>
                           <span className="font-semibold text-indigo-200">@{requestedBy}</span>
                         </span>

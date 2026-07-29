@@ -6,7 +6,7 @@ import { AlbumArtworkAmbientGlow } from './AlbumArtworkAmbientGlow';
 import { AlbumArtworkFront } from './AlbumArtworkFront';
 import { AlbumArtworkBack } from './AlbumArtworkBack';
 
-export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
+export function AlbumArtwork({ src, alt = "Album Art", size }: AlbumArtworkProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [tiltStyle, setTiltStyle] = useState<string>('rotateX(0deg) rotateY(0deg)');
   const [isHovered, setIsHovered] = useState(false);
@@ -40,6 +40,8 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
     setIsFlipped(prev => !prev);
   };
 
+  const sizeStyle = size ? { width: `${size}px`, height: `${size}px` } : undefined;
+
   return (
     <div className="relative group flex flex-col items-center flex-shrink-0">
       <div
@@ -48,8 +50,9 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative h-52 w-52 flex-shrink-0 cursor-pointer select-none"
+        className={`relative ${size ? '' : 'h-44 w-44 sm:h-52 sm:w-52'} flex-shrink-0 cursor-pointer select-none`}
         style={{
+          ...sizeStyle,
           perspective: '1000px',
           transform: isHovered ? tiltStyle : 'rotateX(0deg) rotateY(0deg)',
           transition: isHovered ? 'transform 100ms ease-out' : 'transform 400ms ease-out',
@@ -59,8 +62,9 @@ export function AlbumArtwork({ src, alt = "Album Art" }: AlbumArtworkProps) {
         <AlbumArtworkAmbientGlow src={src} />
 
         <div
-          className="relative h-52 w-52 rounded-xl shadow-2xl"
+          className={`relative ${size ? 'w-full h-full' : 'h-44 w-44 sm:h-52 sm:w-52'} rounded-xl shadow-2xl`}
           style={{
+            ...sizeStyle,
             transformStyle: 'preserve-3d',
             transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
             transition: 'transform 950ms cubic-bezier(0.34, 1.25, 0.64, 1)',
