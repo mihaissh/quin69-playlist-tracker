@@ -32,6 +32,7 @@ export interface InfoFieldProps {
 export interface AlbumArtworkProps {
   src: string | null;
   alt?: string;
+  size?: number | null;
 }
 
 export interface SearchLinksProps {

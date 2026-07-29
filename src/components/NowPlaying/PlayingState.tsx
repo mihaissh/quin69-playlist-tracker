@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { parseSongInfo } from '@/utils/songParser';
 import { AlbumArtwork } from './AlbumArtwork';
 import { InfoField } from './InfoField';
@@ -26,13 +27,45 @@ export function PlayingState({ currentSong, albumArt }: PlayingStateProps) {
     ? `${songInfo.artist} - ${songInfo.title}`
     : songInfo.title;
 
+  const rightColRef = useRef<HTMLDivElement>(null);
+  const [artworkSize, setArtworkSize] = useState<number | null>(null);
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (rightColRef.current && window.innerWidth >= 640) {
+        const height = rightColRef.current.offsetHeight;
+        if (height > 0) {
+          setArtworkSize(height);
+        }
+      } else {
+        setArtworkSize(null);
+      }
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
+    });
+
+    if (rightColRef.current) {
+      observer.observe(rightColRef.current);
+    }
+
+    window.addEventListener('resize', updateSize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateSize);
+    };
+  }, [currentSong]);
+
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
-      <div className="flex-shrink-0 mx-auto sm:mx-0">
-        <AlbumArtwork src={albumArt} />
+    <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-stretch">
+      <div className="flex-shrink-0 mx-auto sm:mx-0 flex items-center justify-center">
+        <AlbumArtwork src={albumArt} size={artworkSize} />
       </div>
 
-      <div className="flex-1 relative">
+      <div ref={rightColRef} className="flex-1 relative w-full">
         <div className="relative z-10 h-full flex flex-col justify-between">
           <div className="space-y-3 text-center sm:text-left mb-4">
             <InfoField
