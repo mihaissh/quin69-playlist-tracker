@@ -44,20 +44,6 @@ export function usePlaylist({
       setError(false);
       
       const streamIsLive = await checkStreamStatus(signal);
-      
-      if (!streamIsLive) {
-        setPlaylist({
-          currentSongTitle: null,
-          historyTitles: [],
-          historySongs: [],
-          isOffline: true,
-        });
-        if (!initialLoadComplete) {
-          setInitialLoadComplete(true);
-        }
-        setLoading(false);
-        return;
-      }
 
       const response = await fetch(API_ENDPOINTS.PLAYLIST_LOG, {
         signal,

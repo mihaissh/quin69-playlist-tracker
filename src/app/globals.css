@@ -18,6 +18,18 @@
     background-color: #0b0908;
     overflow-x: hidden;
   }
+
+  input, button, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff;
+    -webkit-box-shadow: 0 0 0px 1000px #18181b inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 @layer utilities {
@@ -119,6 +131,15 @@
     }
   }
 
+  @keyframes albumArtIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   @keyframes floating3D {
     0%, 100% {
       transform: translateY(0px) rotateX(0deg) rotateY(0deg);
@@ -151,8 +172,30 @@
     animation: slideDownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
+  .animate-album-art-in {
+    animation: albumArtIn 500ms ease-out forwards;
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .song-change-transition {
+    transition:
+      opacity 400ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
+  }
+
+  .song-change-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition-duration: 500ms;
+  }
+
+  .song-change-hidden {
+    opacity: 0;
+    transform: translateY(6px);
   }
 
   .delay-150 {
@@ -270,6 +313,19 @@
     .marquee-scroll,
     .rgb-wave-text,
     .rgb-wave-letter {
+      animation: none !important;
+    }
+
+    .song-change-transition {
+      transition: opacity 150ms ease !important;
+      transform: none !important;
+    }
+
+    .song-change-hidden {
+      transform: none;
+    }
+
+    .animate-album-art-in {
       animation: none !important;
     }
   }

@@ -23,11 +23,12 @@ export function AlbumArtworkFront({ src, alt = "Album Art" }: AlbumArtworkFrontP
       {src ? (
         <>
           <Image
+            key={src}
             src={src}
             alt={alt}
             fill
             sizes="208px"
-            className="object-cover"
+            className="object-cover animate-album-art-in"
             priority
             unoptimized
           />

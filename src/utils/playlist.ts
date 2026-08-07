@@ -54,15 +54,20 @@ export function parsePlaylist(lines: string[], streamIsLive: boolean): PlaylistD
     return { currentSongTitle: null, historyTitles: [], historySongs: [], isOffline };
   }
 
-  // The FIRST song (most recent message) is the current song
-  currentSongTitle = allSongsWithTimestamps[0].title;
+  // If live, the first song (most recent message) is the current song
+  // If offline, no song is currently playing, so all songs go to history
+  const startIndex = streamIsLive ? 1 : 0;
+  if (streamIsLive) {
+    currentSongTitle = allSongsWithTimestamps[0].title;
+  }
 
-  // All songs after the first (older messages) are history
   // Remove duplicates but keep order
   const seen = new Set<string>();
-  seen.add(currentSongTitle); // Don't include current in history
+  if (currentSongTitle) {
+    seen.add(currentSongTitle);
+  }
   
-  for (let i = 1; i < allSongsWithTimestamps.length; i++) {
+  for (let i = startIndex; i < allSongsWithTimestamps.length; i++) {
     const song = allSongsWithTimestamps[i];
     if (!seen.has(song.title)) {
       historyTitles.push(song.title);
