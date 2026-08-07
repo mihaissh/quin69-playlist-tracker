@@ -50,17 +50,19 @@ export function RecentlyPlayed({ historySongs: incomingHistory }: RecentlyPlayed
           <div className="relative flex-1 max-w-[200px] sm:max-w-xs min-w-[120px]">
             <SearchIcon className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
-              type="text"
+              type="search"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               placeholder="Search..."
+              aria-label="Search recently played songs"
               className="w-full bg-zinc-800/50 hover:bg-zinc-800/80 focus:bg-zinc-900 border border-zinc-700/50 focus:border-indigo-500/50 rounded-lg pl-8 pr-7 py-1 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:outline-none focus:ring-0 transition-colors shadow-none"
             />
             {searchTerm && (
               <button
+                type="button"
                 onClick={() => setSearchTerm('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 text-xs px-1"
-                title="Clear search"
+                aria-label="Clear search"
               >
                 ✕
               </button>
@@ -97,9 +99,8 @@ export function RecentlyPlayed({ historySongs: incomingHistory }: RecentlyPlayed
 
             return (
               <div
-                key={`${song}-${index}`}
+                key={`${songData.timestamp}-${song}`}
                 className={`transition-colors duration-300 ${isSelected ? 'bg-indigo-950/20' : ''}`}
-                style={{ animationDelay: `${index * 35}ms` }}
               >
                 <button
                   onClick={() => setSelectedSong(isSelected ? null : song)}

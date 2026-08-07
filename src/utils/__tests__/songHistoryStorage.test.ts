@@ -6,6 +6,7 @@ import {
   exportHistoryAsJSON,
   exportHistoryAsCSV,
 } from '../songHistoryStorage';
+import { SONG_HISTORY_STORAGE_KEY } from '@/constants';
 import type { SongWithTimestamp } from '@/types/playlist';
 
 describe('songHistoryStorage', () => {
@@ -46,9 +47,24 @@ describe('songHistoryStorage', () => {
     });
 
     it('should handle corrupt localStorage data gracefully', () => {
-      localStorage.setItem('quin69_playlist_history', 'invalid-json-{');
-      const loaded = loadStoredHistory();
-      expect(loaded).toEqual([]);
+      localStorage.setItem(SONG_HISTORY_STORAGE_KEY, 'invalid-json-{');
+      expect(loadStoredHistory()).toEqual([]);
+    });
+
+    it('should ignore invalid stored song entries', () => {
+      localStorage.setItem(
+        SONG_HISTORY_STORAGE_KEY,
+        JSON.stringify([
+          { title: 'Valid Song', timestamp: '2025-01-15 10:00:00' },
+          { title: '', timestamp: '2025-01-15 09:00:00' },
+          { timestamp: '2025-01-15 08:00:00' },
+          'not-an-object',
+        ])
+      );
+
+      expect(loadStoredHistory()).toEqual([
+        { title: 'Valid Song', timestamp: '2025-01-15 10:00:00' },
+      ]);
     });
   });
 

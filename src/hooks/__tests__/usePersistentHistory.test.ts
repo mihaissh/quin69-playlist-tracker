@@ -18,8 +18,8 @@ describe('usePersistentHistory', () => {
       usePersistentHistory({ incomingHistory: sampleSongs })
     );
 
-    expect(result.current.historySongs).toHaveLength(2);
     expect(result.current.totalStoredCount).toBe(2);
+    expect(result.current.filteredSongs).toHaveLength(2);
   });
 
   it('should filter songs according to search term', () => {
@@ -35,18 +35,20 @@ describe('usePersistentHistory', () => {
     expect(result.current.filteredSongs[0].title).toBe('Artist A - Song A');
   });
 
-  it('should clear stored history on demand', () => {
-    const { result } = renderHook(() =>
-      usePersistentHistory({ incomingHistory: sampleSongs })
+  it('should not re-merge when incoming history is unchanged', () => {
+    const saveSpy = jest.spyOn(Storage.prototype, 'setItem');
+
+    const { rerender } = renderHook(
+      ({ incomingHistory }) => usePersistentHistory({ incomingHistory }),
+      { initialProps: { incomingHistory: sampleSongs } }
     );
 
-    expect(result.current.totalStoredCount).toBe(2);
+    const callsAfterInit = saveSpy.mock.calls.length;
 
-    act(() => {
-      result.current.clearHistory();
-    });
+    rerender({ incomingHistory: [...sampleSongs] });
 
-    expect(result.current.totalStoredCount).toBe(0);
-    expect(result.current.historySongs).toEqual([]);
+    expect(saveSpy.mock.calls.length).toBe(callsAfterInit);
+
+    saveSpy.mockRestore();
   });
 });
