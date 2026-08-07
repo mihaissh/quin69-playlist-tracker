@@ -8,6 +8,8 @@
  */
 export const UPDATE_INTERVAL_MS = 15000;
 export const MAX_HISTORY_SONGS = 50;
+export const MAX_PERSISTED_SONGS = 2000;
+export const SONG_HISTORY_STORAGE_KEY = 'quin69_playlist_history';
 export const COPY_FEEDBACK_DURATION_MS = 2000;
 export const ALBUM_ART_DEFER_DELAY_MS = 0;
 

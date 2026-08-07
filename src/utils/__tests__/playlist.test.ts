@@ -25,9 +25,12 @@ describe('parsePlaylist', () => {
     expect(result.historySongs[1].timestamp).toBe('2025-01-15 09:58:00');
   });
 
-  it('should mark as offline when stream is not live', () => {
+  it('should mark as offline and include all songs in history when stream is not live', () => {
     const result = parsePlaylist(mockLines, false);
     expect(result.isOffline).toBe(true);
+    expect(result.currentSongTitle).toBeNull();
+    expect(result.historySongs).toHaveLength(3);
+    expect(result.historySongs[0].title).toBe('Artist - Song Title');
   });
 
   it('should filter out excluded patterns', () => {
