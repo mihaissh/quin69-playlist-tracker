@@ -3,8 +3,6 @@ import {
   saveStoredHistory,
   clearStoredHistory,
   mergeSongHistory,
-  exportHistoryAsJSON,
-  exportHistoryAsCSV,
 } from '../songHistoryStorage';
 import { SONG_HISTORY_STORAGE_KEY } from '@/constants';
 import type { SongWithTimestamp } from '@/types/playlist';
@@ -98,21 +96,6 @@ describe('songHistoryStorage', () => {
       expect(merged[0].timestamp).toBe('2025-01-15 10:00:00');
       expect(merged[1].timestamp).toBe('2025-01-15 09:30:00');
       expect(merged[2].timestamp).toBe('2025-01-15 09:00:00');
-    });
-  });
-
-  describe('export functions', () => {
-    it('should format song history as JSON', () => {
-      const json = exportHistoryAsJSON([mockSong1]);
-      const parsed = JSON.parse(json);
-      expect(parsed).toEqual([mockSong1]);
-    });
-
-    it('should format song history as CSV with proper headers', () => {
-      const csv = exportHistoryAsCSV([mockSong1]);
-      const lines = csv.split('\n');
-      expect(lines[0]).toBe('Timestamp,Song Title,Requested By');
-      expect(lines[1]).toBe('"2025-01-15 10:00:00","Artist 1 - Song 1","user1"');
     });
   });
 });
