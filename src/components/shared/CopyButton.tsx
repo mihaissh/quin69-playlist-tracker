@@ -20,13 +20,15 @@ export interface CopyButtonProps {
   songText: string;
   variant?: 'button' | 'div';
   className?: string;
+  /** Accessible label (defaults to "Copy song and artist") */
+  label?: string;
 }
 
 /**
  * Reusable copy button component
  * Can be used as a button or div (for keyboard accessibility)
  */
-export function CopyButton({ songText, variant = 'button', className = '' }: CopyButtonProps) {
+export function CopyButton({ songText, variant = 'button', className = '', label = 'Copy song and artist' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -69,7 +71,7 @@ export function CopyButton({ songText, variant = 'button', className = '' }: Cop
           }
         }}
         className={`${baseClasses} cursor-pointer`}
-        aria-label="Copy song and artist"
+        aria-label={label}
       >
         {content}
       </div>
@@ -80,7 +82,7 @@ export function CopyButton({ songText, variant = 'button', className = '' }: Cop
     <button
       onClick={handleCopy}
       className={baseClasses}
-      aria-label="Copy song and artist"
+      aria-label={label}
     >
       {content}
     </button>

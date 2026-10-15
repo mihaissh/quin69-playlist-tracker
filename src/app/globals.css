@@ -75,45 +75,21 @@
     }
   }
 
-  @keyframes rgbWave {
-    0% {
-      background-position: 0% 50%;
-    }
-
-    100% {
-      background-position: 300% 50%;
-    }
+  .eq-bar {
+    height: 30%;
+    animation: eqBar 1.1s ease-in-out infinite;
   }
 
-  @keyframes letterWave {
-
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-3.5px);
-    }
+  @keyframes eqBar {
+    0%, 100% { height: 25%; }
+    25% { height: 90%; }
+    50% { height: 45%; }
+    75% { height: 100%; }
   }
 
-  .rgb-wave-text {
-    background: linear-gradient(90deg,
-        #ffffff 0%,
-        #06b6d4 25%,
-        #84cc16 50%,
-        #ff0055 75%,
-        #ffffff 100%);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: rgbWave 4s linear infinite;
-  }
-
-  .rgb-wave-letter {
-    display: inline-block;
-    animation: letterWave 1.4s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    .eq-bar { animation: none; height: 60%; }
+    .marquee-scroll { animation: none; }
   }
 
   .marquee-scroll {
@@ -176,6 +152,53 @@
     animation: albumArtIn 500ms ease-out forwards;
   }
 
+  /* Now Playing: slow drift of the blurred artwork */
+  .backdrop-drift {
+    animation: backdropDrift 28s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  @keyframes backdropDrift {
+    0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+    50% { transform: scale(1.12) translate(-3%, 2%) rotate(1.5deg); }
+    100% { transform: scale(1.05) translate(3%, -2%) rotate(-1deg); }
+  }
+
+  /* Now Playing: floating album-coloured lights */
+  .backdrop-orb-a {
+    animation: orbA 22s ease-in-out infinite alternate;
+  }
+
+  .backdrop-orb-b {
+    animation: orbB 26s ease-in-out infinite alternate;
+  }
+
+  @keyframes orbA {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(45%, 25%) scale(1.25); }
+  }
+
+  @keyframes orbB {
+    0% { transform: translate(0, 0) scale(1.1); }
+    100% { transform: translate(-40%, -30%) scale(0.9); }
+  }
+
+  /* Small equalizer in the "Now Playing" pill */
+  .pill-eq-bar {
+    animation: pillEq 0.9s ease-in-out infinite alternate;
+    transform-origin: bottom;
+  }
+
+  @keyframes pillEq {
+    0% { transform: scaleY(0.3); }
+    100% { transform: scaleY(1); }
+  }
+
+  /* Now Playing background cross-fade between songs */
+  .animate-backdrop-in {
+    animation: albumArtIn 900ms ease-in-out both;
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
   }
@@ -196,6 +219,11 @@
   .song-change-hidden {
     opacity: 0;
     transform: translateY(6px);
+  }
+
+  /* Now Playing card grows / shrinks smoothly between song, donation and offline */
+  .card-height-transition {
+    transition: height 500ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .delay-150 {
@@ -310,9 +338,7 @@
   /* Respect user's motion preferences */
   @media (prefers-reduced-motion: reduce) {
 
-    .marquee-scroll,
-    .rgb-wave-text,
-    .rgb-wave-letter {
+    .marquee-scroll {
       animation: none !important;
     }
 
@@ -325,7 +351,16 @@
       transform: none;
     }
 
-    .animate-album-art-in {
+    .card-height-transition {
+      transition: none;
+    }
+
+    .animate-album-art-in,
+    .animate-backdrop-in,
+    .backdrop-drift,
+    .backdrop-orb-a,
+    .backdrop-orb-b,
+    .pill-eq-bar {
       animation: none !important;
     }
   }

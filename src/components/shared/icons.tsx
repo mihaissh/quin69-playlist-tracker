@@ -52,3 +52,16 @@ export const SearchIcon = ({ className = "w-4 h-4" }: IconProps) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
   </svg>
 );
+
+export const BitsIcon = ({ className = "w-4 h-4" }: IconProps) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2 4 9.5 12 22l8-12.5L12 2Zm0 3.2 4.9 4.6L12 17.6 7.1 9.8 12 5.2Z" />
+  </svg>
+);
+
+export const PauseIcon = ({ className = "w-3.5 h-3.5" }: IconProps) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <rect x="6" y="5" width="4" height="14" rx="1" />
+    <rect x="14" y="5" width="4" height="14" rx="1" />
+  </svg>
+);

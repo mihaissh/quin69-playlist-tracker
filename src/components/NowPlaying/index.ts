@@ -12,6 +12,7 @@ export { OfflineState } from './OfflineState';
 export { PlayingState } from './PlayingState';
 export { LoadingState, NoSongState } from './EmptyStates';
 export { CardHeader } from './CardHeader';
+export { DonationState } from './DonationState';
 
 export type { NowPlayingProps, PlayingStateProps, InfoFieldProps, AlbumArtworkProps } from '@/types/music';
 

@@ -1,102 +1,61 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { parseSongInfo } from '@/utils/songParser';
 import { AlbumArtwork } from './AlbumArtwork';
-import { InfoField } from './InfoField';
+import { SongProgress } from './SongProgress';
 import { SearchLinks, CopyButton } from '@/components/shared';
-import type { PlayingStateProps, SongInfo } from '@/types/music';
+import type { PlayingStateProps } from '@/types/music';
 
-const getTextSizeClass = (text1: string, text2: string): string => {
-  const maxLength = Math.max(text1.length, text2.length);
+const TEXT_SHADOW = '0 2px 12px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.7)';
 
-  if (maxLength > 50) return 'text-sm sm:text-base';
-  if (maxLength > 30) return 'text-base sm:text-lg';
-  return 'text-lg sm:text-xl font-extrabold';
-};
+/** Big title for short names, smaller for long ones so they still fit */
+function getTitleSizeClass(title: string): string {
+  if (title.length > 45) return 'text-xl sm:text-2xl';
+  if (title.length > 25) return 'text-2xl sm:text-3xl';
+  return 'text-3xl sm:text-4xl';
+}
 
-export function PlayingState({ currentSong, albumArt }: PlayingStateProps) {
-  const parsed = parseSongInfo(currentSong);
-  const songInfo: SongInfo = {
-    artist: parsed.artist,
-    title: parsed.title,
-    requestedBy: parsed.requestedBy,
-  };
-  const textSizeClass = getTextSizeClass(songInfo.artist, songInfo.title);
-  const cleanQuery = songInfo.artist !== 'Unknown Artist'
-    ? `${songInfo.artist} - ${songInfo.title}`
-    : songInfo.title;
-
-  const rightColRef = useRef<HTMLDivElement>(null);
-  const [artworkSize, setArtworkSize] = useState<number | null>(null);
-
-  useEffect(() => {
-    const updateSize = () => {
-      if (rightColRef.current && window.innerWidth >= 640) {
-        const height = rightColRef.current.offsetHeight;
-        if (height > 0) {
-          setArtworkSize(height);
-        }
-      } else {
-        setArtworkSize(null);
-      }
-    };
-
-    updateSize();
-
-    const observer = new ResizeObserver(() => {
-      updateSize();
-    });
-
-    if (rightColRef.current) {
-      observer.observe(rightColRef.current);
-    }
-
-    window.addEventListener('resize', updateSize);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updateSize);
-    };
-  }, [currentSong]);
+export function PlayingState({ currentSong, albumArt, timing, durationMs = null }: PlayingStateProps) {
+  const { artist, title, requestedBy } = parseSongInfo(currentSong);
+  const hasArtist = artist !== 'Unknown Artist';
+  const cleanQuery = hasArtist ? `${artist} - ${title}` : title;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-stretch">
-      <div className="flex-shrink-0 mx-auto sm:mx-0 flex items-center justify-center">
-        <AlbumArtwork src={albumArt} size={artworkSize} />
+    <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 items-center sm:items-stretch">
+      <div className="flex-shrink-0 flex items-center justify-center">
+        <AlbumArtwork src={albumArt} seed={cleanQuery} />
       </div>
 
-      <div ref={rightColRef} className="flex-1 relative w-full">
-        <div className="relative z-10 h-full flex flex-col justify-between">
-          <div className="space-y-3 text-center sm:text-left mb-4">
-            <InfoField
-              label="Artist"
-              value={songInfo.artist}
-              labelColor="text-indigo-400 font-bold"
-              valueColor="text-zinc-100"
-              textSize={textSizeClass}
-            />
-            <InfoField
-              label="Song"
-              value={songInfo.title}
-              labelColor="text-purple-400 font-bold"
-              valueColor="text-white"
-              textSize={textSizeClass}
-            />
-            {songInfo.requestedBy && (
-              <div className="pt-1">
-                <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                  Requested By
-                </span>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-950/80 border border-indigo-500/50 text-indigo-200 shadow-md">
-                  <span className="text-sm sm:text-base font-extrabold text-indigo-300">
-                    @{songInfo.requestedBy}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
+      <div className="flex-1 min-w-0 w-full flex flex-col justify-between gap-4 text-center sm:text-left sm:py-1">
+        <div className="space-y-1.5 min-w-0">
+          <h2
+            className={`${getTitleSizeClass(title)} font-extrabold text-white leading-tight tracking-tight break-words line-clamp-3`}
+            style={{ textShadow: TEXT_SHADOW }}
+            title={title}
+          >
+            {title}
+          </h2>
+          {hasArtist && (
+            <p
+              className="text-base sm:text-xl font-semibold text-zinc-200/90 break-words line-clamp-2"
+              style={{ textShadow: TEXT_SHADOW }}
+            >
+              {artist}
+            </p>
+          )}
+          {requestedBy && (
+            <div className="pt-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-950/60 border border-white/10 text-xs text-zinc-300 backdrop-blur-sm">
+                <span className="text-zinc-400">requested by</span>
+                <span className="font-bold text-white">@{requestedBy}</span>
+              </span>
+            </div>
+          )}
+        </div>
 
-          <div className="mt-auto flex items-center justify-center sm:justify-start gap-2">
+        <div className="space-y-3">
+          {timing && <SongProgress timing={timing} durationMs={durationMs} />}
+          <div className="flex items-center justify-center sm:justify-start gap-2">
             <SearchLinks songQuery={cleanQuery} />
             <CopyButton songText={cleanQuery} />
           </div>
@@ -105,4 +64,3 @@ export function PlayingState({ currentSong, albumArt }: PlayingStateProps) {
     </div>
   );
 }
-

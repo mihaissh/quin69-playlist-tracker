@@ -7,11 +7,9 @@
 export function Footer() {
 
   return (
-    <footer className="mt-6 pt-6 text-center space-y-2 animate-fade-in delay-300 relative">
-      <p className="text-xs text-zinc-600">
-        Updates every 15s
-      </p>
+    <footer className="pt-3 text-center animate-fade-in delay-300 relative flex-shrink-0">
       <p className="text-xs text-zinc-500">
+        <span className="text-zinc-600">Updates every 15s</span>{' '}•{' '}
         Made with{' '}
         <span className="text-red-400">♥</span>{' '}
         for{' '}
@@ -28,18 +26,9 @@ export function Footer() {
           href="https://github.com/mihaissh/quin69-playlist-tracker"
           target="_blank"
           rel="noopener noreferrer"
-          className="rgb-wave-text hover:opacity-90 transition-opacity font-bold inline-flex"
-          aria-label="mihaissh"
+          className="font-bold text-zinc-300 hover:text-white transition-colors"
         >
-          {"mihaissh".split('').map((char, index) => (
-            <span
-              key={index}
-              className="rgb-wave-letter"
-              style={{ animationDelay: `${index * 0.12}s` }}
-            >
-              {char}
-            </span>
-          ))}
+          mihaissh
         </a>
       </p>
     </footer>
