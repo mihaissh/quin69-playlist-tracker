@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// Inter is bundled from npm (self-hosted) instead of next/font/google, so the
+// build never has to download fonts from Google (that download was breaking CI).
+import "@fontsource-variable/inter";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 const basePath = process.env.NODE_ENV === "production" ? "/quin69-playlist-tracker" : "";
 
@@ -32,7 +28,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://open.spotify.com" />
         <link rel="dns-prefetch" href="https://www.youtube.com" />
       </head>
-      <body className={`${inter.className} antialiased font-sans bg-[#0b0908] text-white min-h-screen relative`}>
+      <body className={`antialiased font-sans bg-[#0b0908] text-white min-h-screen relative`}>
         {/* Warm dark orange radial glow background */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
           {/* Top radial orange spotlight */}
