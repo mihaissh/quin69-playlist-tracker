@@ -4,16 +4,26 @@ import { API_ENDPOINTS, ITUNES_IMAGE_SIZES } from '@/constants';
 
 interface UseAlbumArtReturn {
   albumArt: string | null;
+  /** The song title `albumArt` belongs to (null until the first lookup finishes) */
+  albumArtSong: string | null;
+  /** Track length from iTunes (null when unknown or the match is unreliable) */
+  durationMs: number | null;
   fetchAlbumArt: (songTitle: string) => Promise<void>;
 }
 
 interface ITunesSearchResult {
   results?: Array<{
     artworkUrl100?: string;
+    trackTimeMillis?: number;
   }>;
 }
 
-async function queryItunes(searchTerm: string, signal?: AbortSignal): Promise<string | null> {
+interface ItunesMatch {
+  art: string;
+  durationMs: number | null;
+}
+
+async function queryItunes(searchTerm: string, signal?: AbortSignal): Promise<ItunesMatch | null> {
   if (!searchTerm.trim()) return null;
 
   const url = `${API_ENDPOINTS.ITUNES_SEARCH}?${new URLSearchParams({
@@ -27,11 +37,12 @@ async function queryItunes(searchTerm: string, signal?: AbortSignal): Promise<st
     const res = await fetch(url, { signal });
     if (!res.ok) return null;
     const data: ITunesSearchResult = await res.json();
-    if (data?.results && data.results.length > 0 && data.results[0].artworkUrl100) {
-      return data.results[0].artworkUrl100.replace(
-        ITUNES_IMAGE_SIZES.DEFAULT,
-        ITUNES_IMAGE_SIZES.HIGH_QUALITY
-      );
+    const first = data?.results?.[0];
+    if (first?.artworkUrl100) {
+      return {
+        art: first.artworkUrl100.replace(ITUNES_IMAGE_SIZES.DEFAULT, ITUNES_IMAGE_SIZES.HIGH_QUALITY),
+        durationMs: typeof first.trackTimeMillis === 'number' ? first.trackTimeMillis : null,
+      };
     }
   } catch {
     // Return null on abort or network error
@@ -44,7 +55,7 @@ async function fetchAlbumArtFromItunes(
   artist: string,
   track: string,
   signal?: AbortSignal
-): Promise<string | null> {
+): Promise<ItunesMatch | null> {
   const isUnknownArtist = !artist || artist.toLowerCase() === 'unknown artist';
 
   // 1. Primary search: "Artist Track" or just "Track"
@@ -55,7 +66,8 @@ async function fetchAlbumArtFromItunes(
   // 2. Fallback: Search with track title only if artist was present
   if (!isUnknownArtist) {
     art = await queryItunes(track, signal);
-    if (art) return art;
+    // Title-only matches are often a different recording: keep the art, not the length
+    if (art) return { ...art, durationMs: null };
 
     // 3. Fallback: Try with main artist (split by feat/ft/&/x)
     const mainArtist = artist.split(/\s*(?:feat\.?|ft\.?|&|x|vs\.?)\s*/i)[0].trim();
@@ -68,13 +80,41 @@ async function fetchAlbumArtFromItunes(
   return null;
 }
 
+/**
+ * Resolves once the image is downloaded (or failed / timed out), so the
+ * Now Playing card can fade in with the artwork already there instead of popping in.
+ */
+function preloadImage(url: string, timeoutMs = 3000): Promise<void> {
+  return new Promise(resolve => {
+    if (typeof window === 'undefined') return resolve();
+    const img = new window.Image();
+    const timer = setTimeout(resolve, timeoutMs);
+    const done = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    img.onload = done;
+    img.onerror = done;
+    img.src = url;
+  });
+}
+
 export function useAlbumArt(): UseAlbumArtReturn {
-  const [albumArt, setAlbumArt] = useState<string | null>(null);
+  const [art, setArt] = useState<{ url: string | null; song: string | null; durationMs: number | null }>({
+    url: null,
+    song: null,
+    durationMs: null,
+  });
+  const setAlbumArt = useCallback(
+    (match: ItunesMatch | null, song: string) =>
+      setArt({ url: match?.art ?? null, song, durationMs: match?.durationMs ?? null }),
+    []
+  );
   const albumArtAbortControllerRef = useRef<AbortController | null>(null);
 
   const fetchAlbumArt = useCallback(async (songTitle: string) => {
     if (!songTitle) {
-      setAlbumArt(null);
+      setArt({ url: null, song: null, durationMs: null });
       return;
     }
 
@@ -89,21 +129,25 @@ export function useAlbumArt(): UseAlbumArtReturn {
       const parsed = parseSongInfo(songTitle);
 
       if (!parsed.title) {
-        setAlbumArt(null);
+        setAlbumArt(null, songTitle);
         return;
       }
 
       if (signal.aborted) return;
 
-      const artworkUrl = await fetchAlbumArtFromItunes(parsed.artist, parsed.title, signal);
+      const match = await fetchAlbumArtFromItunes(parsed.artist, parsed.title, signal);
 
       if (signal.aborted) return;
 
-      setAlbumArt(artworkUrl);
+      if (match) await preloadImage(match.art);
+
+      if (signal.aborted) return;
+
+      setAlbumArt(match, songTitle);
     } catch {
-      setAlbumArt(null);
+      if (!signal.aborted) setAlbumArt(null, songTitle);
     }
-  }, []);
+  }, [setAlbumArt]);
 
   useEffect(() => {
     return () => {
@@ -114,7 +158,9 @@ export function useAlbumArt(): UseAlbumArtReturn {
   }, []);
 
   return {
-    albumArt,
+    albumArt: art.url,
+    albumArtSong: art.song,
+    durationMs: art.durationMs,
     fetchAlbumArt,
   };
 }

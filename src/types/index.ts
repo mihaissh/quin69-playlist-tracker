@@ -23,6 +23,7 @@ export type {
 // Playlist/History types
 export type {
   SongWithTimestamp,
+  SongTiming,
   RecentlyPlayedProps,
   PlaylistData,
 } from './playlist';
@@ -33,3 +34,12 @@ export type {
   LoadingSpinnerProps,
 } from './spinner';
 
+
+// Donation types
+export type {
+  TtsDonation,
+  DonationRecord,
+  PlaybackState,
+  ActiveDonation,
+  ResolvedPauses,
+} from './donation';

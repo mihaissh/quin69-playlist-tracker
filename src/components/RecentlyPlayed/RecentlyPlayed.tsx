@@ -8,233 +8,178 @@ import {
   ClockIcon,
   ChevronDownIcon,
   CopyButton,
-  SearchIcon,
 } from '@/components/shared';
 import { formatTimestamp } from '@/utils/timestamp';
 import { parseSongInfo, cleanSongString } from '@/utils/songParser';
 import type { RecentlyPlayedProps } from '@/types/playlist';
 import { EMPTY_STATE_MESSAGES } from '@/constants';
-import { usePersistentHistory } from '@/hooks/usePersistentHistory';
 
-export function RecentlyPlayed({ historySongs: incomingHistory }: RecentlyPlayedProps) {
-  const {
-    filteredSongs,
-    searchTerm,
-    setSearchTerm,
-    totalStoredCount,
-  } = usePersistentHistory({ incomingHistory });
-
+export function RecentlyPlayed({ songs: filteredSongs, searchTerm }: RecentlyPlayedProps) {
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
 
   const hasHistory = filteredSongs.length > 0;
 
   return (
-    <div
-      className="bg-zinc-900/60 backdrop-blur-xl rounded-xl border border-zinc-800/80 overflow-hidden relative shadow-2xl transition-all duration-500 hover:border-zinc-700/60 flex flex-col"
-      style={{ boxShadow: '0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05)' }}
-    >
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+    <div className="divide-y divide-zinc-800/50">
+      {hasHistory ? (
+        filteredSongs.map((songData, index) => {
+          const song = songData.title;
+          const timestamp = formatTimestamp(songData.timestamp);
+          const isSkipped = song.toLowerCase().includes('skipped');
+          const isSelected = selectedSong === song;
+          const parsed = parseSongInfo(song);
+          const requestedBy = songData.requestedBy || parsed.requestedBy;
 
-      {/* Header bar */}
-      <div className="px-5 py-3.5 border-b border-zinc-800/80 bg-gradient-to-r from-zinc-900/90 via-zinc-800/40 to-zinc-900/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Left side: Title + Search input right next to Recently Played */}
-        <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <h3 className="text-sm font-semibold flex items-center gap-2 text-zinc-300 flex-shrink-0">
-            <span className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400 ring-1 ring-indigo-500/20 flex items-center justify-center">
-              <ClockIcon className="w-3.5 h-3.5" />
-            </span>
-            <span>Recently Played</span>
-          </h3>
+          const cleanTitleText = cleanSongString(song);
+          const searchQuery = isSkipped
+            ? cleanTitleText.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
+            : cleanTitleText;
 
-          {/* Search input inline next to title */}
-          <div className="relative flex-1 max-w-[200px] sm:max-w-xs min-w-[120px]">
-            <SearchIcon className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Search..."
-              aria-label="Search recently played songs"
-              className="w-full bg-zinc-800/50 hover:bg-zinc-800/80 focus:bg-zinc-900 border border-zinc-700/50 focus:border-indigo-500/50 rounded-lg pl-8 pr-7 py-1 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:outline-none focus:ring-0 transition-colors shadow-none"
-            />
-            {searchTerm && (
+          const cleanTitle = searchQuery;
+
+          return (
+            <div
+              key={`${songData.timestamp}-${song}`}
+              className={`transition-colors duration-300 ${isSelected ? 'bg-indigo-950/20' : ''}`}
+            >
               <button
-                type="button"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 text-xs px-1"
-                aria-label="Clear search"
+                onClick={() => setSelectedSong(isSelected ? null : song)}
+                className={`group relative w-full text-left pl-4 pr-3 sm:px-5 py-3 transition-all duration-300 flex items-center justify-between gap-3 ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-indigo-900/20 via-zinc-800/40 to-transparent'
+                    : 'hover:bg-gradient-to-r hover:from-indigo-950/20 hover:via-zinc-800/40 hover:to-transparent'
+                }`}
+                aria-expanded={isSelected}
               >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Right side: Song Count Badge */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="px-2.5 py-0.5 bg-indigo-950/40 text-indigo-300 text-xs font-semibold rounded-full border border-indigo-500/30 shadow-sm flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            {totalStoredCount} {totalStoredCount === 1 ? 'song' : 'songs'}
-          </span>
-        </div>
-      </div>
-
-      {/* Songs List */}
-      <div className="divide-y divide-zinc-800/50 max-h-[440px] overflow-y-auto minimal-scrollbar">
-        {hasHistory ? (
-          filteredSongs.map((songData, index) => {
-            const song = songData.title;
-            const timestamp = formatTimestamp(songData.timestamp);
-            const isSkipped = song.toLowerCase().includes('skipped');
-            const isSelected = selectedSong === song;
-            const parsed = parseSongInfo(song);
-            const requestedBy = songData.requestedBy || parsed.requestedBy;
-
-            const cleanTitleText = cleanSongString(song);
-            const searchQuery = isSkipped
-              ? cleanTitleText.replace(/\s*\(?\s*skipped\s*\)?\s*/gi, '').trim()
-              : cleanTitleText;
-
-            const cleanTitle = searchQuery;
-
-            return (
-              <div
-                key={`${songData.timestamp}-${song}`}
-                className={`transition-colors duration-300 ${isSelected ? 'bg-indigo-950/20' : ''}`}
-              >
-                <button
-                  onClick={() => setSelectedSong(isSelected ? null : song)}
-                  className={`group relative w-full text-left px-5 py-3 transition-all duration-300 flex items-center justify-between gap-3 ${
-                    isSelected
-                      ? 'bg-gradient-to-r from-indigo-900/20 via-zinc-800/40 to-transparent'
-                      : 'hover:bg-gradient-to-r hover:from-indigo-950/20 hover:via-zinc-800/40 hover:to-transparent'
+                <div
+                  style={{ background: 'linear-gradient(to bottom, var(--accent, #6366f1), #8b5cf6)' }}
+                  className={`absolute left-0 top-0 bottom-0 w-1 rounded-r transition-all duration-300 ${
+                    isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                   }`}
-                  aria-expanded={isSelected}
-                >
-                  <div
-                    className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-r transition-all duration-300 ${
-                      isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    }`}
-                  />
+                />
 
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className="text-[10px] font-mono font-medium text-zinc-500 group-hover:text-indigo-400 transition-colors w-4 text-right flex-shrink-0">
-                      #{index + 1}
+                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                  <span className="hidden sm:inline text-[10px] font-mono font-medium text-zinc-500 group-hover:text-indigo-400 transition-colors w-4 text-right flex-shrink-0">
+                    #{index + 1}
+                  </span>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 flex-1 min-w-0">
+                    <span
+                      className={`text-sm font-medium transition-all flex-1 min-w-0 break-words line-clamp-2 sm:line-clamp-1 ${
+                        isSkipped
+                          ? 'text-zinc-500 italic group-hover:text-zinc-300'
+                          : isSelected
+                            ? 'text-indigo-300 font-semibold'
+                            : 'text-zinc-200 group-hover:text-indigo-300'
+                      }`}
+                    >
+                      {cleanTitle}
                     </span>
 
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span
-                        className={`text-sm font-medium transition-all flex-1 truncate ${
-                          isSkipped
-                            ? 'text-zinc-500 italic group-hover:text-zinc-300'
-                            : isSelected
-                              ? 'text-indigo-300 font-semibold'
-                              : 'text-zinc-200 group-hover:text-indigo-300'
-                        }`}
-                      >
-                        {cleanTitle}
-                      </span>
-
-                      {requestedBy && (
-                        <span className="inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex-shrink-0 items-center gap-1">
-                          <span className="text-indigo-400/80 text-[10px]">req by</span>
-                          <span className="font-semibold text-indigo-200">@{requestedBy}</span>
-                        </span>
-                      )}
-
-                      {isSkipped && (
-                        <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 flex-shrink-0">
-                          Skipped
-                        </span>
-                      )}
-                    </div>
-
+                    <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap empty:hidden">
                     {timestamp && (
-                      <span className="text-[11px] font-mono text-zinc-500 group-hover:text-zinc-400 bg-zinc-800/40 group-hover:bg-zinc-800/80 px-2 py-0.5 rounded transition-all flex-shrink-0 hidden sm:inline-block">
-                        {timestamp}
+                      <span className="sm:hidden text-[10px] font-mono text-zinc-500">{timestamp}</span>
+                    )}
+                    {requestedBy && (
+                      <span className="inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex-shrink-0 items-center gap-1">
+                        <span className="text-indigo-400/80 text-[10px]">req by</span>
+                        <span className="font-semibold text-indigo-200">@{requestedBy}</span>
                       </span>
                     )}
 
-                    <div onClick={e => e.stopPropagation()} className="flex-shrink-0">
-                      <CopyButton songText={searchQuery} variant="div" />
+                    {isSkipped && (
+                      <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 flex-shrink-0">
+                        Skipped
+                      </span>
+                    )}
                     </div>
                   </div>
 
-                  <div
-                    className={`p-1.5 rounded-lg border transition-all duration-300 flex-shrink-0 ${
-                      isSelected
-                        ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 rotate-180 shadow-md shadow-indigo-500/20'
-                        : 'bg-zinc-800/40 border-zinc-700/40 text-zinc-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/30'
-                    }`}
-                  >
-                    <ChevronDownIcon className="w-3.5 h-3.5 transition-transform duration-300" />
+                  {timestamp && (
+                    <span className="text-[11px] font-mono text-zinc-500 group-hover:text-zinc-400 bg-zinc-800/40 group-hover:bg-zinc-800/80 px-2 py-0.5 rounded transition-all flex-shrink-0 hidden sm:inline-block">
+                      {timestamp}
+                    </span>
+                  )}
+
+                  <div onClick={e => e.stopPropagation()} className="flex-shrink-0">
+                    <CopyButton songText={searchQuery} variant="div" className="p-2.5 sm:p-2" />
                   </div>
-                </button>
+                </div>
 
                 <div
-                  className={`grid transition-all duration-300 ease-in-out ${
+                  className={`p-2.5 sm:p-1.5 rounded-lg border transition-all duration-300 flex-shrink-0 ${
                     isSelected
-                      ? 'grid-rows-[1fr] opacity-100 border-t border-indigo-500/20'
-                      : 'grid-rows-[0fr] opacity-0 border-t border-transparent'
+                      ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 rotate-180 shadow-md shadow-indigo-500/20'
+                      : 'bg-zinc-800/40 border-zinc-700/40 text-zinc-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/30'
                   }`}
                 >
-                  <div className="overflow-hidden">
-                    <div className="px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down">
-                      {requestedBy && (
-                        <div className="mb-3 px-3.5 py-2 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-between shadow-inner">
-                          <span className="text-xs font-medium text-zinc-400">Requested by</span>
-                          <span className="text-xs font-bold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/30">
-                            @{requestedBy}
-                          </span>
-                        </div>
-                      )}
-                      <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2.5">
-                        Listen or Search Track
-                      </p>
+                  <ChevronDownIcon className="w-3.5 h-3.5 transition-transform duration-300" />
+                </div>
+              </button>
 
-                      <div className="flex flex-col sm:flex-row gap-2.5">
-                        <a
-                          href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-clean-spotify rounded-xl text-xs font-semibold text-zinc-300 transition-colors group"
-                        >
-                          <SpotifyIcon className="w-4 h-4 text-emerald-400" />
-                          <span>Search Spotify</span>
-                          <ExternalLinkIcon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                        </a>
-
-                        <a
-                          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-clean-youtube rounded-xl text-xs font-semibold text-zinc-300 transition-colors group"
-                        >
-                          <YouTubeIcon className="w-4 h-4 text-rose-400" />
-                          <span>Search YouTube</span>
-                          <ExternalLinkIcon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                        </a>
+              <div
+                className={`grid transition-all duration-300 ease-in-out ${
+                  isSelected
+                    ? 'grid-rows-[1fr] opacity-100 border-t border-indigo-500/20'
+                    : 'grid-rows-[0fr] opacity-0 border-t border-transparent'
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="px-4 sm:px-5 py-4 bg-zinc-950/70 backdrop-blur-md animate-slide-down">
+                    {requestedBy && (
+                      <div className="mb-3 px-3.5 py-2 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-between shadow-inner">
+                        <span className="text-xs font-medium text-zinc-400">Requested by</span>
+                        <span className="text-xs font-bold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/30">
+                          @{requestedBy}
+                        </span>
                       </div>
+                    )}
+                    <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2.5">
+                      Listen or Search Track
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-2.5">
+                      <a
+                        href={`https://open.spotify.com/search/${encodeURIComponent(searchQuery)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-clean-spotify rounded-xl text-xs font-semibold text-zinc-300 transition-colors group"
+                      >
+                        <SpotifyIcon className="w-4 h-4 text-emerald-400" />
+                        <span>Search Spotify</span>
+                        <ExternalLinkIcon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                      </a>
+
+                      <a
+                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 btn-clean-youtube rounded-xl text-xs font-semibold text-zinc-300 transition-colors group"
+                      >
+                        <YouTubeIcon className="w-4 h-4 text-rose-400" />
+                        <span>Search YouTube</span>
+                        <ExternalLinkIcon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
-            );
-          })
-        ) : (
-          <div className="px-5 py-12 text-center flex flex-col items-center justify-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-zinc-500 mb-1">
-              <ClockIcon className="w-5 h-5" />
             </div>
-            <p className="text-sm font-medium text-zinc-400">
-              {searchTerm ? 'No songs match your search query' : EMPTY_STATE_MESSAGES.NO_RECENT_SONGS}
-            </p>
-            <p className="text-xs text-zinc-600">
-              {searchTerm ? 'Try searching for another artist or song title' : 'Played songs during live streams will appear here'}
-            </p>
+          );
+        })
+      ) : (
+        <div className="px-5 py-12 text-center flex flex-col items-center justify-center gap-2">
+          <div className="w-10 h-10 rounded-full bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-zinc-500 mb-1">
+            <ClockIcon className="w-5 h-5" />
           </div>
-        )}
-      </div>
+          <p className="text-sm font-medium text-zinc-400">
+            {searchTerm ? 'No songs match your search query' : EMPTY_STATE_MESSAGES.NO_RECENT_SONGS}
+          </p>
+          <p className="text-xs text-zinc-600">
+            {searchTerm ? 'Try searching for another artist or song title' : 'Played songs during live streams will appear here'}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

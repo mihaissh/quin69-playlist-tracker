@@ -2,11 +2,10 @@
 
 import { useState, useRef, MouseEvent } from 'react';
 import type { AlbumArtworkProps } from '@/types/music';
-import { AlbumArtworkAmbientGlow } from './AlbumArtworkAmbientGlow';
 import { AlbumArtworkFront } from './AlbumArtworkFront';
 import { AlbumArtworkBack } from './AlbumArtworkBack';
 
-export function AlbumArtwork({ src, alt = "Album Art", size }: AlbumArtworkProps) {
+export function AlbumArtwork({ src, alt = "Album Art", size, seed }: AlbumArtworkProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [tiltStyle, setTiltStyle] = useState<string>('rotateX(0deg) rotateY(0deg)');
   const [isHovered, setIsHovered] = useState(false);
@@ -50,7 +49,7 @@ export function AlbumArtwork({ src, alt = "Album Art", size }: AlbumArtworkProps
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`relative ${size ? '' : 'h-44 w-44 sm:h-52 sm:w-52'} flex-shrink-0 cursor-pointer select-none`}
+        className={`relative ${size ? '' : 'h-52 w-52 sm:h-60 sm:w-60'} flex-shrink-0 cursor-pointer select-none`}
         style={{
           ...sizeStyle,
           perspective: '1000px',
@@ -59,19 +58,17 @@ export function AlbumArtwork({ src, alt = "Album Art", size }: AlbumArtworkProps
         }}
         title="Click to flip artwork"
       >
-        <AlbumArtworkAmbientGlow src={src} />
-
         <div
-          className={`relative ${size ? 'w-full h-full' : 'h-44 w-44 sm:h-52 sm:w-52'} rounded-xl shadow-2xl`}
+          className={`relative ${size ? 'w-full h-full' : 'h-52 w-52 sm:h-60 sm:w-60'} rounded-xl shadow-2xl`}
           style={{
             ...sizeStyle,
             transformStyle: 'preserve-3d',
             transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
             transition: 'transform 950ms cubic-bezier(0.34, 1.25, 0.64, 1)',
-            boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(99, 102, 241, 0.25)',
+            boxShadow: '0 10px 24px -12px rgba(0, 0, 0, 0.85)',
           }}
         >
-          <AlbumArtworkFront src={src} alt={alt} />
+          <AlbumArtworkFront src={src} alt={alt} seed={seed} />
           <AlbumArtworkBack src={src} />
         </div>
       </div>
